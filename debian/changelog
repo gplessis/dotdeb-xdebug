@@ -1,0 +1,129 @@
+xdebug (2.3.1-1) unstable; urgency=medium
+
+  * New upstream version 2.3.2
+
+ -- Ondřej Surý <ondrej@debian.org>  Sat, 02 May 2015 13:15:35 +0200
+
+xdebug (2.2.6-1) unstable; urgency=medium
+
+  * New upstream version 2.2.6
+
+ -- Ondřej Surý <ondrej@debian.org>  Sat, 10 Jan 2015 09:36:17 +0100
+
+xdebug (2.2.5-1) unstable; urgency=medium
+
+  * New upstream version 2.2.5
+
+ -- Ondřej Surý <ondrej@debian.org>  Thu, 15 May 2014 11:19:19 +0200
+
+xdebug (2.2.4-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Lior Kaplan <kaplan@debian.org>  Mon, 07 Apr 2014 01:41:25 +0300
+
+xdebug (2.2.3-2) unstable; urgency=low
+
+  * Update the build system to use dh-php5
+  * Move under the PHP PECL team umbrella
+
+ -- Ondřej Surý <ondrej@debian.org>  Tue, 22 Oct 2013 14:55:27 +0200
+
+xdebug (2.2.3-1) unstable; urgency=low
+
+  * New upstream release (Closes: #710530)
+    - Adds support for PHP 5.5
+
+ -- Lior Kaplan <kaplan@debian.org>  Fri, 31 May 2013 21:13:27 +0300
+
+xdebug (2.2.1-2) unstable; urgency=low
+
+  * Force correct path to xdebug.so in conffile (Closes: #689791)
+
+ -- Lior Kaplan <kaplan@debian.org>  Sun, 11 Nov 2012 00:28:28 +0200
+
+xdebug (2.2.1-1) unstable; urgency=low
+
+  * New upstream release
+  * Move dpkg-maintscript-helper call from prerm to postrm (Closes: #684266)
+
+ -- Lior Kaplan <kaplan@debian.org>  Sat, 11 Aug 2012 03:08:22 +0300
+
+xdebug (2.2.0-1) unstable; urgency=low
+
+  * New upstream release
+  * Manage ini file with php5enmod and php5enmod (Closes: #667788) 
+
+ -- Lior Kaplan <kaplan@debian.org>  Sun, 20 May 2012 22:47:32 +0300
+
+xdebug (2.2.0~rc1-1) unstable; urgency=low
+
+  * New upstream release
+    - Adds support for PHP 5.4 (Closes: #656491)
+
+ -- Lior Kaplan <kaplan@debian.org>  Thu, 15 Mar 2012 19:48:56 +0200
+
+xdebug (2.1.3-2) unstable; urgency=low
+
+  * Drop php 5.4 support patches as they cause problems (Closes: #657883)
+
+ -- Lior Kaplan <kaplan@debian.org>  Mon, 30 Jan 2012 23:26:52 +0200
+
+xdebug (2.1.3-1) unstable; urgency=low
+
+  * New upstream release
+  * Remove PHP < 5.4 version check in configure.
+  * Adapt cherry-picked patches for PHP 5.4 support.
+
+ -- Lior Kaplan <kaplan@debian.org>  Thu, 26 Jan 2012 01:51:05 +0200
+
+xdebug (2.1.2-1) unstable; urgency=low
+
+  * New upstream release
+  * Cherry-picked 413d88b56 from upstream for PHP 5.4 support (Closes: #656491)
+  * Cherry-picked 1ef642b39 from upstream for having PHP 5.3 and 5.4 support
+  * Cherry-picked 04f80138f from upstream for php 5.4 ZEND_RETURN_BY_REF support
+  * Fix lintian warning duplicate-changelog-files
+  * Bumped Standards version (no changes required)
+  * Add myself to Uploaders
+
+ -- Lior Kaplan <kaplan@debian.org>  Tue, 24 Jan 2012 01:49:28 +0200
+
+xdebug (2.1.0-1) unstable; urgency=low
+
+  * New upstream release (Closes: #570163, #571765, #555643, #582937)
+  * Switch to dpkg-source 3.0 (quilt) format
+  * Bumped Standards version
+
+ -- Martin Meredith <mez@debian.org>  Thu, 08 Jul 2010 23:23:38 +0100
+
+xdebug (2.0.5-1) unstable; urgency=low
+
+  * New upstream release
+  * Bumped Standards Version 
+
+ -- Martin Meredith <mez@debian.org>  Mon, 27 Jul 2009 21:27:36 +0100
+
+xdebug (2.0.4-2) unstable; urgency=low
+
+  * Fix broken watch file (which somehow went missing from the previous upload)
+
+ -- Martin Meredith <mez@debian.org>  Mon, 12 Jan 2009 00:44:43 +0000
+
+xdebug (2.0.4-1) unstable; urgency=low
+
+  * New upstream release
+  * Fixed watch file for new download location
+  * Removed Uploader (have never had any contact from him)
+  * Changed Maintainer (for new Debian Address)
+  * Updated Standards Version
+  * Changed php5-dev depends (can build with 5.1 or greater)
+
+ -- Martin Meredith <mez@debian.org>  Wed, 07 Jan 2009 19:48:57 +0000
+
+xdebug (2.0.3-1) unstable; urgency=low
+
+  * Initial release (Closes: #377348)
+
+ -- Martin Meredith <mez@ubuntu.com>  Tue, 08 Apr 2008 15:25:16 +0100
+

@@ -1,0 +1,4 @@
+# We don't build the debugclient (yet) so we don't need to update these.
+xdebug source: ancient-autotools-helper-file xdebug-2.2.4/debugclient/config.guess 2001-09-04
+xdebug source: ancient-autotools-helper-file xdebug-2.2.4/debugclient/config.sub 2001-09-07
+xdebug source: ancient-libtool xdebug-2.2.4/debugclient/ltmain.sh 1.4.2
