@@ -1,0 +1,17 @@
+#!/usr/bin/make -f
+
+SOURCE_DIR=$(shell ls -1d xdebug-*)
+
+%:
+	dh $@ --with php5 --sourcedirectory=$(SOURCE_DIR)
+
+override_dh_auto_install:
+	dh_auto_install --sourcedirectory=$(SOURCE_DIR) -- INSTALL_ROOT=$(CURDIR)/debian/tmp
+
+override_dh_auto_configure:
+	cd xdebug-*; phpize
+	dh_auto_configure --sourcedirectory=$(SOURCE_DIR) -- --enable-xdebug
+
+override_dh_auto_clean:
+	dh_auto_clean --sourcedirectory=$(SOURCE_DIR)
+	cd xdebug-*; phpize --clean
