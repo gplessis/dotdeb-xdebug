@@ -1,10 +1,7 @@
 Source: xdebug
 Section: php
 Priority: optional
-Maintainer: Debian PHP PECL Maintainers <pkg-php-pecl@lists.alioth.debian.org>
-Uploaders: Martin Meredith <mez@debian.org>,
-	   Lior Kaplan <kaplan@debian.org>,
-	   Ondřej Surý <ondrej@debian.org>
+Maintainer: Guillaume Plessis <gui@dotdeb.org>
 Build-Depends: debhelper (>= 9~),
 	       php5-dev,
 	       dh-php5
