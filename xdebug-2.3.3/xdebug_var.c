@@ -32,6 +32,26 @@
 
 ZEND_EXTERN_MODULE_GLOBALS(xdebug)
 
+HashTable *xdebug_objdebug_pp(zval **zval_pp, int *is_tmp TSRMLS_DC)
+{
+	zval dzval = **zval_pp;
+	HashTable *tmp;
+
+	if (Z_OBJ_HANDLER(dzval, get_debug_info)) {
+		zend_bool old_trace = XG(do_trace);
+		XG(do_trace) = 0;
+		tmp = Z_OBJ_HANDLER(dzval, get_debug_info)(&dzval, is_tmp TSRMLS_CC);
+		XG(do_trace) = old_trace;
+		return tmp;
+	} else {
+		*is_tmp = 0;
+		if (Z_OBJ_HANDLER(dzval, get_properties)) {
+			return Z_OBJPROP(dzval);
+		}
+	}
+	return NULL;
+}
+
 char* xdebug_error_type_simple(int type)
 {
 	switch (type) {
@@ -242,12 +262,56 @@ static char* prepare_search_key(char *name, int *name_length, char *prefix, int 
 	return element;
 }
 
-static zval* fetch_zval_from_symbol_table(HashTable *ht, char* name, int name_length, int type, char* ccn, int ccnl, zend_class_entry *cce TSRMLS_DC)
+static zval **get_arrayobject_storage(zval *parent TSRMLS_DC)
 {
+	zval **tmp = NULL;
+	int is_temp;
+	HashTable *properties = Z_OBJDEBUG_P(parent, is_temp);
+
+	if (zend_hash_find(properties, "\0ArrayObject\0storage", sizeof("*ArrayObject*storage"), (void **) &tmp) == SUCCESS) {
+		return tmp;
+	}
+
+	return NULL;
+}
+
+static zval **get_splobjectstorage_storage(zval *parent TSRMLS_DC)
+{
+	zval **tmp = NULL;
+	int is_temp;
+	HashTable *properties = Z_OBJDEBUG_P(parent, is_temp);
+
+	if (zend_hash_find(properties, "\0SplObjectStorage\0storage", sizeof("*SplObjectStorage*storage"), (void **) &tmp) == SUCCESS) {
+		return tmp;
+	}
+
+	return NULL;
+}
+
+static zval **get_arrayiterator_storage(zval *parent TSRMLS_DC)
+{
+	zval **tmp = NULL;
+	int is_temp;
+	HashTable *properties = Z_OBJDEBUG_P(parent, is_temp);
+
+	if (zend_hash_find(properties, "\0ArrayIterator\0storage", sizeof("*ArrayIterator*storage"), (void **) &tmp) == SUCCESS) {
+		return tmp;
+	}
+
+	return NULL;
+}
+
+static zval* fetch_zval_from_symbol_table(zval *parent, char* name, int name_length, int type, char* ccn, int ccnl, zend_class_entry *cce TSRMLS_DC)
+{
+	HashTable *ht = NULL;
 	zval **retval_pp = NULL, *retval_p = NULL;
 	char  *element = NULL;
 	int    element_length = name_length;
 	zend_property_info *zpp;
+
+	if (parent) {
+		ht = fetch_ht_from_zval(parent TSRMLS_CC);
+	}
 
 	switch (type) {
 		case XF_ST_STATIC_ROOT:
@@ -263,7 +327,7 @@ static zval* fetch_zval_from_symbol_table(HashTable *ht, char* name, int name_le
 			/* Then we try to see whether the first char is * and use the part between * and * as class name for the private property */
 			if (name[0] == '*') {
 				char *secondStar;
-				
+
 				secondStar = strstr(name + 1, "*");
 				if (secondStar) {
 					free(element);
@@ -337,7 +401,18 @@ static zval* fetch_zval_from_symbol_table(HashTable *ht, char* name, int name_le
 			break;
 
 		case XF_ST_OBJ_PROPERTY:
-			/* First we try a public property */
+			/* First we try an object handler */
+			if (cce) {
+				zval *tmp_val;
+
+				tmp_val = zend_read_property(cce, parent, name, name_length, 0 TSRMLS_CC);
+				if (tmp_val && tmp_val != EG(uninitialized_zval_ptr)) {
+					retval_p = tmp_val;
+					goto cleanup;
+				}
+			}
+
+			/* Then we try a public property */
 			element = prepare_search_key(name, &element_length, "", 0);
 			if (ht && zend_symtable_find(ht, element, element_length + 1, (void **) &retval_pp) == SUCCESS) {
 				retval_p = *retval_pp;
@@ -362,15 +437,49 @@ static zval* fetch_zval_from_symbol_table(HashTable *ht, char* name, int name_le
 				goto cleanup;
 			}
 			element_length = name_length;
+					
+			/* All right, time for a mega hack. It's SplObjectStorage access time! */
+			if (strncmp(ccn, "SplObjectStorage", ccnl) == 0 && strncmp(name, "storage", name_length) == 0) {
+				element = NULL;
+				if ((retval_pp = get_splobjectstorage_storage(parent TSRMLS_CC)) != NULL) {
+					if (retval_pp) {
+						retval_p = *retval_pp;
+						goto cleanup;
+					}
+				}
+			}
 
 			/* Then we try to see whether the first char is * and use the part between * and * as class name for the private property */
 			if (name[0] == '*') {
 				char *secondStar;
-				
+
 				secondStar = strstr(name + 1, "*");
 				if (secondStar) {
 					free(element);
 					element_length = name_length - (secondStar + 1 - name);
+
+					/* All right, time for a mega hack. It's ArrayObject access time! */
+					if (strncmp(name + 1, "ArrayObject", secondStar - name - 1) == 0 && strncmp(secondStar + 1, "storage", element_length) == 0) {
+						element = NULL;
+						if ((retval_pp = get_arrayobject_storage(parent TSRMLS_CC)) != NULL) {
+							if (retval_pp) {
+								retval_p = *retval_pp;
+								goto cleanup;
+							}
+						}
+					}
+					/* All right, time for a mega hack. It's ArrayIterator access time! */
+					if (strncmp(name + 1, "ArrayIterator", secondStar - name - 1) == 0 && strncmp(secondStar + 1, "storage", element_length) == 0) {
+						element = NULL;
+						if ((retval_pp = get_arrayiterator_storage(parent TSRMLS_CC)) != NULL) {
+							if (retval_pp) {
+								retval_p = *retval_pp;
+								goto cleanup;
+							}
+						}
+					}
+
+					/* The normal one */
 					element = prepare_search_key(secondStar + 1, &element_length, name + 1, secondStar - name - 1);
 					if (ht && zend_hash_find(ht, element, element_length + 1, (void **) &retval_pp) == SUCCESS) {
 						retval_p = *retval_pp;
@@ -390,7 +499,6 @@ cleanup:
 
 zval* xdebug_get_php_symbol(char* name, int name_length TSRMLS_DC)
 {
-	HashTable *st = NULL;
 	int        found = -1;
 	int        state = 0;
 	char     **p = &name;
@@ -424,23 +532,20 @@ zval* xdebug_get_php_symbol(char* name, int name_length TSRMLS_DC)
 					if (*p[0] == '[') {
 						keyword_end = *p;
 						if (keyword) {
-							retval = fetch_zval_from_symbol_table(st, keyword, keyword_end - keyword, type, current_classname, cc_length, current_ce TSRMLS_CC);
+							retval = fetch_zval_from_symbol_table(retval, keyword, keyword_end - keyword, type, current_classname, cc_length, current_ce TSRMLS_CC);
 							if (current_classname) {
 								efree(current_classname);
 							}
 							current_classname = NULL;
 							cc_length = 0;
 							current_ce = NULL;
-							if (retval) {
-								st = fetch_ht_from_zval(retval TSRMLS_CC);
-							}
 							keyword = NULL;
 						}
 						state = 3;
 					} else if (*p[0] == '-') {
 						keyword_end = *p;
 						if (keyword) {
-							retval = fetch_zval_from_symbol_table(st, keyword, keyword_end - keyword, type, current_classname, cc_length, current_ce TSRMLS_CC);
+							retval = fetch_zval_from_symbol_table(retval, keyword, keyword_end - keyword, type, current_classname, cc_length, current_ce TSRMLS_CC);
 							if (current_classname) {
 								efree(current_classname);
 							}
@@ -449,7 +554,6 @@ zval* xdebug_get_php_symbol(char* name, int name_length TSRMLS_DC)
 							current_ce = NULL;
 							if (retval) {
 								current_classname = fetch_classname_from_zval(retval, &cc_length, &current_ce TSRMLS_CC);
-								st = fetch_ht_from_zval(retval TSRMLS_CC);
 							}
 							keyword = NULL;
 						}
@@ -458,7 +562,7 @@ zval* xdebug_get_php_symbol(char* name, int name_length TSRMLS_DC)
 					} else if (*p[0] == ':') {
 						keyword_end = *p;
 						if (keyword) {
-							retval = fetch_zval_from_symbol_table(st, keyword, keyword_end - keyword, type, current_classname, cc_length, current_ce TSRMLS_CC);
+							retval = fetch_zval_from_symbol_table(retval, keyword, keyword_end - keyword, type, current_classname, cc_length, current_ce TSRMLS_CC);
 							if (current_classname) {
 								efree(current_classname);
 							}
@@ -466,7 +570,6 @@ zval* xdebug_get_php_symbol(char* name, int name_length TSRMLS_DC)
 							cc_length = 0;
 							if (retval) {
 								current_classname = fetch_classname_from_zval(retval, &cc_length, &current_ce TSRMLS_CC);
-								st = NULL;
 							}
 							keyword = NULL;
 						}
@@ -519,7 +622,7 @@ zval* xdebug_get_php_symbol(char* name, int name_length TSRMLS_DC)
 						quotechar = 0;
 						state = 5;
 						keyword_end = *p;
-						retval = fetch_zval_from_symbol_table(st, keyword, keyword_end - keyword, type, current_classname, cc_length, current_ce TSRMLS_CC);
+						retval = fetch_zval_from_symbol_table(retval, keyword, keyword_end - keyword, type, current_classname, cc_length, current_ce TSRMLS_CC);
 						if (current_classname) {
 							efree(current_classname);
 						}
@@ -527,7 +630,6 @@ zval* xdebug_get_php_symbol(char* name, int name_length TSRMLS_DC)
 						cc_length = 0;
 						if (retval) {
 							current_classname = fetch_classname_from_zval(retval, &cc_length, &current_ce TSRMLS_CC);
-							st = fetch_ht_from_zval(retval TSRMLS_CC);
 						}
 						keyword = NULL;
 					}
@@ -541,7 +643,7 @@ zval* xdebug_get_php_symbol(char* name, int name_length TSRMLS_DC)
 					if (*p[0] == ']') {
 						state = 1;
 						keyword_end = *p;
-						retval = fetch_zval_from_symbol_table(st, keyword, keyword_end - keyword, type, current_classname, cc_length, current_ce TSRMLS_CC);
+						retval = fetch_zval_from_symbol_table(retval, keyword, keyword_end - keyword, type, current_classname, cc_length, current_ce TSRMLS_CC);
 						if (current_classname) {
 							efree(current_classname);
 						}
@@ -549,7 +651,6 @@ zval* xdebug_get_php_symbol(char* name, int name_length TSRMLS_DC)
 						cc_length = 0;
 						if (retval) {
 							current_classname = fetch_classname_from_zval(retval, &cc_length, &current_ce TSRMLS_CC);
-							st = fetch_ht_from_zval(retval TSRMLS_CC);
 						}
 						keyword = NULL;
 					}
@@ -561,8 +662,6 @@ zval* xdebug_get_php_symbol(char* name, int name_length TSRMLS_DC)
 
 						if (strncmp(keyword, "::", 2) == 0) { /* static class properties */
 							zend_class_entry *ce = zend_fetch_class(XG(active_fse)->function.class, strlen(XG(active_fse)->function.class), ZEND_FETCH_CLASS_SELF TSRMLS_CC);
-
-							st = NULL;
 
 							current_classname = estrdup(ce->name);
 							cc_length = strlen(ce->name);
@@ -580,7 +679,7 @@ zval* xdebug_get_php_symbol(char* name, int name_length TSRMLS_DC)
 		}
 	} while (found < 0);
 	if (keyword != NULL) {
-		retval = fetch_zval_from_symbol_table(st, keyword, *p - keyword, type, current_classname, cc_length, current_ce TSRMLS_CC);
+		retval = fetch_zval_from_symbol_table(retval, keyword, *p - keyword, type, current_classname, cc_length, current_ce TSRMLS_CC);
 	}
 	if (current_classname) {
 		efree(current_classname);
@@ -800,7 +899,7 @@ void xdebug_var_export(zval **struc, xdebug_str *str, int level, int debug_zval,
 			break;
 
 		case IS_OBJECT:
-			myht = Z_OBJDEBUG_PP(struc, is_temp);
+			myht = xdebug_objdebug_pp(struc, &is_temp TSRMLS_CC);
 			if (myht->nApplyCount < 1) {
 				char *class_name;
 				zend_uint class_name_len;
@@ -1118,7 +1217,7 @@ void xdebug_var_export_text_ansi(zval **struc, xdebug_str *str, int mode, int le
 			break;
 
 		case IS_OBJECT:
-			myht = Z_OBJDEBUG_PP(struc, is_temp);
+			myht = xdebug_objdebug_pp(struc, &is_temp TSRMLS_CC);
 			if (myht && myht->nApplyCount < 1) {
 				char *class_name;
 				zend_uint class_name_len;
@@ -1611,7 +1710,7 @@ void xdebug_var_export_xml_node(zval **struc, char *name, xdebug_xml_node *node,
 			}
 
 			/* Adding normal properties */
-			myht = Z_OBJDEBUG_PP(struc, is_temp);
+			myht = xdebug_objdebug_pp(struc, &is_temp TSRMLS_CC);
 			if (myht) {
 				zend_hash_apply_with_arguments(myht TSRMLS_CC, (apply_func_args_t) object_item_add_to_merged_hash, 2, merged_hash, (int) XDEBUG_OBJECT_ITEM_TYPE_PROPERTY);
 			}
@@ -1857,7 +1956,7 @@ void xdebug_var_export_fancy(zval **struc, xdebug_str *str, int level, int debug
 			break;
 
 		case IS_OBJECT:
-			myht = Z_OBJDEBUG_PP(struc, is_temp);
+			myht = xdebug_objdebug_pp(struc, &is_temp TSRMLS_CC);
 			xdebug_str_add(str, xdebug_sprintf("\n%*s", (level - 1) * 4, ""), 1);
 			if (myht->nApplyCount < 1) {
 				xdebug_str_add(str, xdebug_sprintf("<b>object</b>(<i>%s</i>)", Z_OBJCE_PP(struc)->name), 1);

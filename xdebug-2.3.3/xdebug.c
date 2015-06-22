@@ -776,7 +776,106 @@ PHP_MSHUTDOWN_FUNCTION(xdebug)
 #else
 	php_xdebug_shutdown_globals(&xdebug_globals TSRMLS_CC);
 #endif
+ 
+	{
+		int i = 0;
+		zend_set_user_opcode_handler(ZEND_EXIT, NULL);
 
+#ifndef ZTS
+		/* Overload opcodes for code coverage */
+		if (XG(coverage_enable)) {
+#endif
+			zend_set_user_opcode_handler(ZEND_JMP, NULL);
+			zend_set_user_opcode_handler(ZEND_JMPZ, NULL);
+			zend_set_user_opcode_handler(ZEND_JMPZ_EX, NULL);
+			zend_set_user_opcode_handler(ZEND_JMPNZ, NULL);
+			zend_set_user_opcode_handler(ZEND_IS_IDENTICAL, NULL);
+			zend_set_user_opcode_handler(ZEND_IS_NOT_IDENTICAL, NULL);
+			zend_set_user_opcode_handler(ZEND_IS_EQUAL, NULL);
+			zend_set_user_opcode_handler(ZEND_IS_NOT_EQUAL, NULL);
+			zend_set_user_opcode_handler(ZEND_IS_SMALLER, NULL);
+			zend_set_user_opcode_handler(ZEND_IS_SMALLER_OR_EQUAL, NULL);
+			zend_set_user_opcode_handler(ZEND_BOOL_NOT, NULL);
+
+			zend_set_user_opcode_handler(ZEND_ADD, NULL);
+			zend_set_user_opcode_handler(ZEND_SUB, NULL);
+			zend_set_user_opcode_handler(ZEND_MUL, NULL);
+			zend_set_user_opcode_handler(ZEND_DIV, NULL);
+
+			zend_set_user_opcode_handler(ZEND_ADD_ARRAY_ELEMENT, NULL);
+			zend_set_user_opcode_handler(ZEND_RETURN, NULL);
+			zend_set_user_opcode_handler(ZEND_RETURN_BY_REF, NULL);
+			zend_set_user_opcode_handler(ZEND_EXT_STMT, NULL);
+			zend_set_user_opcode_handler(ZEND_RAISE_ABSTRACT_ERROR, NULL);
+			zend_set_user_opcode_handler(ZEND_SEND_VAR, NULL);
+			zend_set_user_opcode_handler(ZEND_SEND_VAR_NO_REF, NULL);
+			zend_set_user_opcode_handler(ZEND_SEND_VAL, NULL);
+			zend_set_user_opcode_handler(ZEND_NEW, NULL);
+			zend_set_user_opcode_handler(ZEND_EXT_FCALL_BEGIN, NULL);
+			zend_set_user_opcode_handler(ZEND_CATCH, NULL);
+			zend_set_user_opcode_handler(ZEND_BOOL, NULL);
+			zend_set_user_opcode_handler(ZEND_ADD_CHAR, NULL);
+			zend_set_user_opcode_handler(ZEND_ADD_STRING, NULL);
+			zend_set_user_opcode_handler(ZEND_INIT_ARRAY, NULL);
+			zend_set_user_opcode_handler(ZEND_FETCH_DIM_R, NULL);
+			zend_set_user_opcode_handler(ZEND_FETCH_OBJ_R, NULL);
+			zend_set_user_opcode_handler(ZEND_FETCH_OBJ_W, NULL);
+			zend_set_user_opcode_handler(ZEND_FETCH_OBJ_FUNC_ARG, NULL);
+			zend_set_user_opcode_handler(ZEND_FETCH_DIM_FUNC_ARG, NULL);
+			zend_set_user_opcode_handler(ZEND_FETCH_DIM_UNSET, NULL);
+			zend_set_user_opcode_handler(ZEND_FETCH_OBJ_UNSET, NULL);
+			zend_set_user_opcode_handler(ZEND_FETCH_CLASS, NULL);
+			zend_set_user_opcode_handler(ZEND_FETCH_CONSTANT, NULL);
+			zend_set_user_opcode_handler(ZEND_CONCAT, NULL);
+			zend_set_user_opcode_handler(ZEND_ISSET_ISEMPTY_DIM_OBJ, NULL);
+			zend_set_user_opcode_handler(ZEND_PRE_INC_OBJ, NULL);
+			zend_set_user_opcode_handler(ZEND_SWITCH_FREE, NULL);
+			zend_set_user_opcode_handler(ZEND_QM_ASSIGN, NULL);
+			zend_set_user_opcode_handler(ZEND_DECLARE_LAMBDA_FUNCTION, NULL);
+			zend_set_user_opcode_handler(ZEND_ADD_TRAIT, NULL);
+			zend_set_user_opcode_handler(ZEND_BIND_TRAITS, NULL);
+#ifndef ZTS
+		}
+#endif
+
+		/* Override opcodes for variable assignments in traces */
+		zend_set_user_opcode_handler(ZEND_INCLUDE_OR_EVAL, NULL);
+		zend_set_user_opcode_handler(ZEND_ASSIGN, NULL);
+		zend_set_user_opcode_handler(ZEND_ASSIGN_ADD, NULL);
+		zend_set_user_opcode_handler(ZEND_ASSIGN_SUB, NULL);
+		zend_set_user_opcode_handler(ZEND_ASSIGN_MUL, NULL);
+		zend_set_user_opcode_handler(ZEND_ASSIGN_DIV, NULL);
+		zend_set_user_opcode_handler(ZEND_ASSIGN_MOD, NULL);
+#if PHP_VERSION_ID >= 50600
+		zend_set_user_opcode_handler(ZEND_ASSIGN_POW, NULL);
+#endif
+		zend_set_user_opcode_handler(ZEND_ASSIGN_SL, NULL);
+		zend_set_user_opcode_handler(ZEND_ASSIGN_SR, NULL);
+		zend_set_user_opcode_handler(ZEND_ASSIGN_CONCAT, NULL);
+		zend_set_user_opcode_handler(ZEND_ASSIGN_BW_OR, NULL);
+		zend_set_user_opcode_handler(ZEND_ASSIGN_BW_AND, NULL);
+		zend_set_user_opcode_handler(ZEND_ASSIGN_BW_XOR, NULL);
+		zend_set_user_opcode_handler(ZEND_ASSIGN_DIM, NULL);
+		zend_set_user_opcode_handler(ZEND_ASSIGN_OBJ, NULL);
+		zend_set_user_opcode_handler(ZEND_PRE_INC, NULL);
+		zend_set_user_opcode_handler(ZEND_POST_INC, NULL);
+		zend_set_user_opcode_handler(ZEND_PRE_DEC, NULL);
+		zend_set_user_opcode_handler(ZEND_POST_DEC, NULL);
+		zend_set_user_opcode_handler(ZEND_PRE_INC_OBJ, NULL);
+		zend_set_user_opcode_handler(ZEND_POST_INC_OBJ, NULL);
+		zend_set_user_opcode_handler(ZEND_PRE_DEC_OBJ, NULL);
+		zend_set_user_opcode_handler(ZEND_POST_DEC_OBJ, NULL);
+
+		zend_set_user_opcode_handler(ZEND_BEGIN_SILENCE, NULL);
+		zend_set_user_opcode_handler(ZEND_END_SILENCE, NULL);
+
+		/* cleanup handlers set in MINIT to xdebug_check_branch_entry_handler */
+		for (i = 0; i < 256; i++) {
+			if (zend_get_user_opcode_handler(i) == xdebug_check_branch_entry_handler) {
+				zend_set_user_opcode_handler(i, NULL);
+			}
+		}
+	}
 	return SUCCESS;
 }
 
@@ -1041,14 +1140,17 @@ ZEND_MODULE_POST_ZEND_DEACTIVATE_D(xdebug)
 
 	if (XG(context.list.last_file)) {
 		xdfree(XG(context).list.last_file);
+		XG(context).list.last_file = NULL;
 	}
 
 	if (XG(last_exception_trace)) {
 		xdfree(XG(last_exception_trace));
+		XG(last_exception_trace) = NULL;
 	}
 
 	if (XG(last_eval_statement)) {
 		efree(XG(last_eval_statement));
+		XG(last_eval_statement) = NULL;
 	}
 
 	xdebug_llist_destroy(XG(collected_errors), NULL);
@@ -1070,7 +1172,10 @@ ZEND_MODULE_POST_ZEND_DEACTIVATE_D(xdebug)
 	}
 	if (XG(branches).last_branch_nr) {
 		free(XG(branches).last_branch_nr);
+		XG(branches).last_branch_nr = NULL;
+		XG(branches).size = 0;
 	}
+	XG(previous_mark_filename) = "";
 
 	return SUCCESS;
 }
@@ -1186,6 +1291,7 @@ static void xdebug_throw_exception_hook(zval *exception TSRMLS_DC)
 	zval *xdebug_message_trace, *previous_exception;
 	zend_class_entry *default_ce, *exception_ce;
 	xdebug_brk_info *extra_brk_info;
+	char *code_str = NULL;
 	char *exception_trace;
 	xdebug_str tmp_str = { 0, 0, NULL };
 
@@ -1201,7 +1307,14 @@ static void xdebug_throw_exception_hook(zval *exception TSRMLS_DC)
 	file =    zend_read_property(default_ce, exception, "file",    sizeof("file")-1,    0 TSRMLS_CC);
 	line =    zend_read_property(default_ce, exception, "line",    sizeof("line")-1,    0 TSRMLS_CC);
 
-	convert_to_long_ex(&code);
+	if (Z_TYPE_P(code) == IS_LONG) {
+		if (Z_LVAL_P(code) != 0) {
+			code_str = xdebug_sprintf("%lu", Z_LVAL_P(code));
+		}
+	} else if (Z_TYPE_P(code) != IS_STRING) {
+		code_str = xdstrdup("");
+	}
+
 	convert_to_string_ex(&message);
 	convert_to_string_ex(&file);
 	convert_to_long_ex(&line);
@@ -1265,10 +1378,15 @@ static void xdebug_throw_exception_hook(zval *exception TSRMLS_DC)
 		}
 
 		if (exception_breakpoint_found && xdebug_handle_hit_value(extra_brk_info)) {
-			if (!XG(context).handler->remote_breakpoint(&(XG(context)), XG(stack), Z_STRVAL_P(file), Z_LVAL_P(line), XDEBUG_BREAK, (char *) exception_ce->name, Z_LVAL_P(code), Z_STRVAL_P(message))) {
+			if (!XG(context).handler->remote_breakpoint(&(XG(context)), XG(stack), Z_STRVAL_P(file), Z_LVAL_P(line), XDEBUG_BREAK, (char *) exception_ce->name, code_str ? code_str : Z_STRVAL_P(code), Z_STRVAL_P(message))) {
 				XG(remote_enabled) = 0;
 			}
 		}
+	}
+
+	/* Free code_str if necessary */
+	if (code_str) {
+		xdfree(code_str);
 	}
 }
 
@@ -1452,7 +1570,7 @@ void xdebug_execute_ex(zend_execute_data *execute_data TSRMLS_DC)
 	}
 
 	XG(level)++;
-	if (XG(level) > XG(max_nesting_level)) {
+	if (XG(level) > XG(max_nesting_level) && (XG(max_nesting_level) != -1)) {
 		php_error(E_ERROR, "Maximum function nesting level of '%ld' reached, aborting!", XG(max_nesting_level));
 	}
 
@@ -1609,7 +1727,7 @@ void xdebug_execute_internal(zend_execute_data *current_execute_data, struct _ze
 	void                (*tmp_error_cb)(int type, const char *error_filename, const uint error_lineno, const char *format, va_list args) = NULL;
 
 	XG(level)++;
-	if (XG(level) > XG(max_nesting_level)) {
+	if (XG(level) > XG(max_nesting_level) && (XG(max_nesting_level) != -1)) {
 		php_error(E_ERROR, "Maximum function nesting level of '%ld' reached, aborting!", XG(max_nesting_level));
 	}
 

@@ -25,11 +25,11 @@ Xdebug also provides:
   <email>derick@xdebug.org</email>
   <active>yes</active>
  </lead>
- <date>2015-03-22</date>
- <time>11:22:48</time>
+ <date>2015-06-18</date>
+ <time>23:23:29</time>
  <version>
-  <release>2.3.2</release>
-  <api>2.3.2</api>
+  <release>2.3.3</release>
+  <api>2.3.3</api>
  </version>
  <stability>
   <release>stable</release>
@@ -37,12 +37,35 @@ Xdebug also provides:
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD style</license>
  <notes>
-Sun, Mar 22, 2015 - xdebug 2.3.2
+Fri, Jun 19, 2015 - xdebug 2.3.3
 
 = Fixed bugs:
 
-  - Fixed issue #1117: Path/branch coverage sometimes crashes
-  - Fixed issue #1121: Segfaults with path/branch coverage
+  - Fixed issue #1130: Escaping issues with docrefs and HTML characters in
+    error messages
+  - Fixed issue #1133: PDO exception code value type is changed
+  - Fixed issue #1137: Windows does not support %zu formatting for sprintf
+  - Fixed issue #1140: Tracing with __debugInfo() crashes Xdebug due to a stack
+    overflow
+  - Fixed issue #1148: Can&apos;t disable max_nesting_function
+  - Fixed issue #1151: Crash when another extension calls call_user_function()
+    during RINIT
+
+  - Fixed crash with code coverage (Antony Dovgal)
+  - Fixed usage of virtual_file_ex and STR_FREE (Remi Collet)
+  - Reset overloaded opcodes at the end of each request (Eran Ifrah)
+
+= Improvements:
+
+  - Fixed issue #686: Not possible to inspect SplObjectStorage instances with
+    Xdebug
+  - Fixed issue #864: No attributes are shown if an object extends
+    ArrayIterator
+  - Fixed issue #996: Can&apos;t evaluate property of class that extends ArrayObject
+  - Fixed issue #1134: Allow introspection of ArrayObject implementation&apos;s
+    internal storage
+  - Get rid of setlocale hack, by using %F instead of %f (and speed up tracing
+    by 15-20%)
  </notes>
  <contents>
   <dir name="/">
@@ -58,7 +81,7 @@ Sun, Mar 22, 2015 - xdebug 2.3.2
    <file md5sum="253fc424977def9dd5b58f7a4b42612a" name="debugclient/config.guess" role="src" />
    <file md5sum="15aa53ae3adcec232c145a3fa8590c23" name="debugclient/config.h.in" role="src" />
    <file md5sum="c31eb7b68f55a62a2223734c80c18d1f" name="debugclient/config.sub" role="src" />
-   <file md5sum="56931f80eed3a5a11e0405176feaf951" name="debugclient/configure" role="src" />
+   <file md5sum="c6da5a6fd3cbf243d516db844214fa6a" name="debugclient/configure" role="src" />
    <file md5sum="d4e618720c6c1c92fb16ddb19e77db42" name="debugclient/configure.in" role="src" />
    <file md5sum="cee6647ceb4340358991d5e65cdf5c43" name="debugclient/cvsclean" role="src" />
    <file md5sum="fd5909387a0942054c5fe0ca2c233cc7" name="debugclient/debugclient.dsp" role="src" />
@@ -80,11 +103,11 @@ Sun, Mar 22, 2015 - xdebug 2.3.2
    <file md5sum="a88bc3039991574186377fc15dd85ea3" name="Makefile.frag" role="src" />
    <file md5sum="491aea9e7732f8a60a426964acb8c3ed" name="Makefile.in" role="src" />
    <file md5sum="b5568fbe7977904ace710a7796f3fc4b" name="NEWS" role="doc" />
-   <file md5sum="9d3d00f2d5042b4185f22212e06fac6c" name="php_xdebug.h" role="src" />
+   <file md5sum="2190ad33655aad04ab859a41d92798c8" name="php_xdebug.h" role="src" />
    <file md5sum="7f8447778bee8fd16353ebdbe1577db1" name="README" role="doc" />
-   <file md5sum="e563effeb542385b27923a42ba536246" name="usefulstuff.c" role="src" />
+   <file md5sum="acf82467ae2c206be09f18078941339d" name="usefulstuff.c" role="src" />
    <file md5sum="1f5e2e4469d98a3ba703c81253c4e5a7" name="usefulstuff.h" role="src" />
-   <file md5sum="0d9eda5a09162e03417cbc4ee8672934" name="xdebug.c" role="src" />
+   <file md5sum="d82b0c94f33d1c61cb7ad1aec2854394" name="xdebug.c" role="src" />
    <file md5sum="2e33763f2d92368492cf92826a1294d0" name="xdebug_branch_info.c" role="src" />
    <file md5sum="989aa672a391786c1f11cd967ea02d28" name="xdebug_branch_info.h" role="src" />
    <file md5sum="386de9dea517c8ab24f030afde2dd48b" name="xdebug_code_coverage.c" role="src" />
@@ -94,9 +117,9 @@ Sun, Mar 22, 2015 - xdebug 2.3.2
    <file md5sum="88b42b23c7b7501b6394b9d680e32299" name="xdebug_compat.c" role="src" />
    <file md5sum="ed30f3dc8c112eb3827cd2d66cfccda1" name="xdebug_compat.h" role="src" />
    <file md5sum="029e790510ef5b235d856a15e86d8572" name="xdebug_handlers.c" role="src" />
-   <file md5sum="6cb83e45538f9278b553ef63ad3b46ff" name="xdebug_handlers.h" role="src" />
-   <file md5sum="9e5c3da96de1e185b477339a314dfcdf" name="xdebug_handler_dbgp.c" role="src" />
-   <file md5sum="0ac15ef867896c5b2baabdf5c46f32e9" name="xdebug_handler_dbgp.h" role="src" />
+   <file md5sum="457c76dd64218afec34d0469b81fefa2" name="xdebug_handlers.h" role="src" />
+   <file md5sum="31b10360495ca789f0beff38493171e5" name="xdebug_handler_dbgp.c" role="src" />
+   <file md5sum="d7573602d256307237fe9e2ebbde94c8" name="xdebug_handler_dbgp.h" role="src" />
    <file md5sum="d519346cf080248d88a03bc64e06ab35" name="xdebug_hash.c" role="src" />
    <file md5sum="3046c77469cdbe52fe3f6aa346e35724" name="xdebug_hash.h" role="src" />
    <file md5sum="2e2522cbd6f0f899cf6581121d66a82f" name="xdebug_llist.c" role="src" />
@@ -108,21 +131,21 @@ Sun, Mar 22, 2015 - xdebug 2.3.2
    <file md5sum="7939dabc9fea0ab2bb24db24f232e4e4" name="xdebug_profiler.h" role="src" />
    <file md5sum="7f5b72911970736ec3fe7036a7c940b3" name="xdebug_set.c" role="src" />
    <file md5sum="dc62aa48f78f2f206bff3b9f3aeec2d4" name="xdebug_set.h" role="src" />
-   <file md5sum="e1df74a849544e521a2b65ae9a392221" name="xdebug_stack.c" role="src" />
+   <file md5sum="f18e3e0e7d40d7649339b5871437a6a6" name="xdebug_stack.c" role="src" />
    <file md5sum="3501a69d9999718260219052bfdff98e" name="xdebug_stack.h" role="src" />
-   <file md5sum="a73ae5abfd597912e6c348f4243bb876" name="xdebug_str.c" role="src" />
+   <file md5sum="aabce20cc679cc6b3b69f9fb018a7619" name="xdebug_str.c" role="src" />
    <file md5sum="f2ce0b549015b590a3500e9e63c5aaee" name="xdebug_str.h" role="src" />
    <file md5sum="fe269f14ee451ece68be08356f0c83e2" name="xdebug_superglobals.c" role="src" />
    <file md5sum="840aab219bb96c831bcf9f6c047b1f4e" name="xdebug_superglobals.h" role="src" />
    <file md5sum="439786ed67183b17d2018732cc2fcd40" name="xdebug_tracing.c" role="src" />
    <file md5sum="d93e2b48bfa5d1ee04e3261409c70793" name="xdebug_tracing.h" role="src" />
-   <file md5sum="9b77292d1b93df6d17edfc2dcb539ec3" name="xdebug_trace_textual.c" role="src" />
+   <file md5sum="109714cefc86ab359a944aaeec0727a9" name="xdebug_trace_textual.c" role="src" />
    <file md5sum="0886fdac9617549798a81a7a9ddf8e25" name="xdebug_trace_textual.h" role="src" />
-   <file md5sum="e0a618e751b7645aa52c7f9bc64cdd2f" name="xdebug_trace_computerized.c" role="src" />
+   <file md5sum="8a1ee1dea598e8c4e3d93c2bd024aa31" name="xdebug_trace_computerized.c" role="src" />
    <file md5sum="f2f884fcd95bb79d8414cc7e68c6e201" name="xdebug_trace_computerized.h" role="src" />
-   <file md5sum="94d9c40e399c22d4494797f390a17383" name="xdebug_trace_html.c" role="src" />
+   <file md5sum="4ac8d54f586aeac3f90f70223ed7c0fc" name="xdebug_trace_html.c" role="src" />
    <file md5sum="78338974d708e483dbb5ee4bc0131afa" name="xdebug_trace_html.h" role="src" />
-   <file md5sum="e68e5c7876d710ff64706176d5636ee9" name="xdebug_var.c" role="src" />
+   <file md5sum="676ad37101ebd72010a760e3c33a8ef3" name="xdebug_var.c" role="src" />
    <file md5sum="24065f9116750b684981156ef72673e5" name="xdebug_var.h" role="src" />
    <file md5sum="5ed95c8983c44109b545e920ed1c9013" name="xdebug_xml.c" role="src" />
    <file md5sum="5244d65f4a03d3f43d628a7066b70e59" name="xdebug_xml.h" role="src" />
@@ -141,6 +164,27 @@ Sun, Mar 22, 2015 - xdebug 2.3.2
  <providesextension>xdebug</providesextension>
  <zendextsrcrelease />
  <changelog>
+  <release>
+   <date>2015-03-22</date>
+   <time>12:34:56</time>
+   <version>
+    <release>2.3.2</release>
+    <api>2.3.2</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD style</license>
+   <notes>
+Sun, Mar 22, 2015 - xdebug 2.3.2
+
+= Fixed bugs:
+
+  - Fixed issue #1117: Path/branch coverage sometimes crashes
+  - Fixed issue #1121: Segfaults with path/branch coverage
+   </notes>
+  </release>
   <release>
    <date>2015-02-24</date>
    <time>22:02:00</time>
