@@ -25,6 +25,7 @@
 #include "xdebug_superglobals.h"
 #include "xdebug_var.h"
 #include "ext/standard/html.h"
+#include "ext/standard/php_smart_str.h"
 
 #include "main/php_ini.h"
 
@@ -34,7 +35,7 @@ static char* text_formats[11] = {
 	"\n",
 	"%s: %s in %s on line %d\n",
 	"\nCall Stack:\n",
-	"%10.4f %10ld %3d. %s(",
+	"%10.4F %10ld %3d. %s(",
 	"'%s'",
 	") %s:%d\n",
 	"\n\nVariables in local scope (#%d):\n",
@@ -48,7 +49,7 @@ static char* ansi_formats[11] = {
 	"\n",
 	"[1m[31m%s[0m: %s[22m in [31m%s[0m on line [32m%d[0m[22m\n",
 	"\n[1mCall Stack:[22m\n",
-	"%10.4f %10ld %3d. %s(",
+	"%10.4F %10ld %3d. %s(",
 	"'%s'",
 	") %s:%d\n",
 	"\n\nVariables in local scope (#%d):\n",
@@ -62,7 +63,7 @@ static char* html_formats[13] = {
 	"<br />\n<font size='1'><table class='xdebug-error xe-%s%s' dir='ltr' border='1' cellspacing='0' cellpadding='1'>\n",
 	"<tr><th align='left' bgcolor='#f57900' colspan=\"5\"><span style='background-color: #cc0000; color: #fce94f; font-size: x-large;'>( ! )</span> %s: %s in %s on line <i>%d</i></th></tr>\n",
 	"<tr><th align='left' bgcolor='#e9b96e' colspan='5'>Call Stack</th></tr>\n<tr><th align='center' bgcolor='#eeeeec'>#</th><th align='left' bgcolor='#eeeeec'>Time</th><th align='left' bgcolor='#eeeeec'>Memory</th><th align='left' bgcolor='#eeeeec'>Function</th><th align='left' bgcolor='#eeeeec'>Location</th></tr>\n",
-	"<tr><td bgcolor='#eeeeec' align='center'>%d</td><td bgcolor='#eeeeec' align='center'>%.4f</td><td bgcolor='#eeeeec' align='right'>%ld</td><td bgcolor='#eeeeec'>%s( ",
+	"<tr><td bgcolor='#eeeeec' align='center'>%d</td><td bgcolor='#eeeeec' align='center'>%.4F</td><td bgcolor='#eeeeec' align='right'>%ld</td><td bgcolor='#eeeeec'>%s( ",
 	"<font color='#00bb00'>'%s'</font>",
 	" )</td><td title='%s' bgcolor='#eeeeec'>...%s<b>:</b>%d</td></tr>\n",
 	"<tr><th align='left' colspan='5' bgcolor='#e9b96e'>Variables in local scope (#%d)</th></tr>\n",
@@ -231,7 +232,33 @@ void xdebug_append_error_description(xdebug_str *str, int html, const char *erro
 	size_t newlen;
 
 	if (html) {
-		escaped = php_escape_html_entities((unsigned char *) buffer, strlen(buffer), &newlen, 0, 0, NULL TSRMLS_CC);
+		char *tmp;
+		char *first_closing = strchr(buffer, ']');
+
+		/* We do need to escape HTML entities here, as HTML chars could be in
+		 * the error message. However, PHP in some circumstances also adds an
+		 * HTML link to a manual page. That bit, we don't need to escape. So
+		 * this bit of code finds the portion that doesn't need escaping, adds
+		 * it to a tmp string, and then adds an HTML escaped string for the
+		 * rest of the original buffer. */
+		if (first_closing && strstr(buffer, "() [<a href=") != NULL) {
+			smart_str special_escaped = {0};
+
+			*first_closing = '\0';
+			first_closing++;
+			smart_str_appends(&special_escaped, buffer);
+
+			tmp = php_escape_html_entities((unsigned char *) first_closing, strlen(first_closing), &newlen, 0, 0, NULL TSRMLS_CC);
+			smart_str_appends(&special_escaped, tmp);
+			STR_FREE(tmp);
+
+			smart_str_0(&special_escaped);
+
+			escaped = estrdup(special_escaped.c);
+			smart_str_free(&special_escaped);
+		} else {
+			escaped = php_escape_html_entities((unsigned char *) buffer, strlen(buffer), &newlen, 0, 0, NULL TSRMLS_CC);
+		}
 	} else {
 		escaped = estrdup(buffer);
 	}
@@ -246,7 +273,7 @@ void xdebug_append_error_description(xdebug_str *str, int html, const char *erro
 		xdebug_str_add(str, xdebug_sprintf(formats[1], error_type_str, escaped, error_filename, error_lineno), 1);
 	}
 
-	efree(escaped);
+	STR_FREE(escaped);
 }
 
 void xdebug_append_printable_stack(xdebug_str *str, int html TSRMLS_DC)
@@ -654,9 +681,13 @@ void xdebug_error_cb(int type, const char *error_filename, const uint error_line
 			xdebug_hash_find(XG(context).exception_breakpoints, "*", 1, (void *) &extra_brk_info)
 		) {
 			if (xdebug_handle_hit_value(extra_brk_info)) {
-				if (!XG(context).handler->remote_breakpoint(&(XG(context)), XG(stack), (char *) error_filename, error_lineno, XDEBUG_BREAK, error_type_str, type, buffer)) {
+				char *type_str = xdebug_sprintf("%ld", type);
+
+				if (!XG(context).handler->remote_breakpoint(&(XG(context)), XG(stack), (char *) error_filename, error_lineno, XDEBUG_BREAK, error_type_str, type_str, buffer)) {
 					XG(remote_enabled) = 0;
 				}
+
+				xdfree(type_str);
 			}
 		}
 	}
@@ -989,6 +1020,7 @@ function_stack_entry *xdebug_add_stack_frame(zend_execute_data *zdata, zend_op_a
 	/* Call user function locations */
 	if (
 		!tmp->filename &&
+		XG(stack) &&
 		XDEBUG_LLIST_TAIL(XG(stack)) &&
 		XDEBUG_LLIST_VALP(XDEBUG_LLIST_TAIL(XG(stack))) &&
 		((function_stack_entry*) XDEBUG_LLIST_VALP(XDEBUG_LLIST_TAIL(XG(stack))))->filename
