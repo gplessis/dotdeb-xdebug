@@ -1,3 +1,9 @@
+xdebug (1:2.4.0~rc3-1~dotdeb+8.1) stable; urgency=medium
+
+  * Imported Upstream version 2.4.0~rc3
+
+ -- Guillaume Plessis <gui@dotdeb.org>  Tue, 26 Jan 2016 14:53:42 -0800
+
 xdebug (1:2.3.3-1~dotdeb+php56+7.1) oldstable; urgency=medium
 
   * Imported Upstream version 2.3.3
