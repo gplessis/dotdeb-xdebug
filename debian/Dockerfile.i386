@@ -33,7 +33,7 @@ RUN mk-build-deps --install --tool 'apt-get -y' --remove /root/control && rm -f 
 ADD . /usr/src/builddir
 WORKDIR /usr/src/builddir
 
-RUN curl -Lo /usr/src/xdebug_2.4.0~rc3.orig.tar.gz https://pecl.php.net/get/xdebug-2.4.0RC3.tgz
+RUN curl -Lo /usr/src/xdebug_2.4.0~rc4.orig.tar.gz https://pecl.php.net/get/xdebug-2.4.0RC4.tgz
 #RUN uscan --download-current-version
 RUN dpkg-buildpackage
 
