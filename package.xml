@@ -25,39 +25,30 @@ Xdebug also provides:
   <email>derick@xdebug.org</email>
   <active>yes</active>
  </lead>
- <date>2016-01-25</date>
- <time>22:19:53</time>
+ <date>2016-03-03</date>
+ <time>09:17:08</time>
  <version>
-  <release>2.4.0RC4</release>
-  <api>2.4.0RC4</api>
+  <release>2.4.0</release>
+  <api>2.4.0</api>
  </version>
  <stability>
-  <release>beta</release>
-  <api>beta</api>
+  <release>stable</release>
+  <api>stable</api>
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD style</license>
  <notes>
-Mon, Jan 25, 2016 - xdebug 2.4.0RC4
+Thu, Mar 03, 2016 - xdebug 2.4.0
 
 = Fixed bugs:
 
-  - Fixed issue #1220: Segmentation fault if var_dump() output is too large.
-  - Fixed issue #1223: Xdebug crashes on PHP 7 when doing a DBGp eval command.
-  - Fixed issue #1229: Issues with GCC 4.8, which in -O2 move removes some
-    required code.
-  - Fixed issue #1235: Xdebug does not compile against PHP 7.1-dev due to
-    ZEND_FETCH_STATIC_PROP*.
-  - Fixed issue #1236: Can&apos;t remove breakpoints with negative IDs.
-  - Fixed issue #1238: Xdebug crashes with SIGSEGV while enumerating references
-    in variables.
-  - Fixed issue #1239: Crash due to changes with the CATCH opcode&apos;s jump
-    mechanism in 7.1
-  - Fixed issue #1241: Xdebug doesn&apos;t handle FAST_RET and FAST_CALL opcodes for
-    branch/dead code analysis, and path coverage.
-  - Fixed issue #1245: xdebug_dump_superglobals dumps *uninitialized* with PHP
-    7.
-  - Fixed issue #1250: Add PHP version descriptors to debugging log and profile
-    files.
+  - Fixed issue #1258: Case in PHP 7.0 and code coverage
+  - Fixed issue #1261: segmentation fault in xdebug.so with PHP 7.0 version of
+    &apos;pkgtools&apos; due to spl_autoload()
+  - Fixed issue #1262: overload_var_dump=0 messes with xdebug_var_dump()
+  - Fixed issue #1266: xdebug_dump_superglobals() always dumps empty  stack on
+    PHP 7
+  - Fixed issue #1267: AIX build issues
+  - Fixed issue #1270: String parsing marked not covered with PHP 7
  </notes>
  <contents>
   <dir name="/">
@@ -88,22 +79,22 @@ Mon, Jan 25, 2016 - xdebug 2.4.0RC4
    <file md5sum="20af8d0d8c9b4478a446c1dee0a0c0f0" name="debugclient/mkinstalldirs" role="src" />
    <file md5sum="b5fc597bbe6e45044998dd2608104cc9" name="debugclient/usefulstuff.c" role="src" />
    <file md5sum="462d3f396dfb100d67b4e89d22e81382" name="debugclient/usefulstuff.h" role="src" />
-   <file md5sum="e9fe7146965b138c07fb00872f470288" name="config.m4" role="src" />
+   <file md5sum="e3882067d9edc91bd57bceb7964c6c69" name="config.m4" role="src" />
    <file md5sum="32847cc5a7d1a8eea77b817f6a168b11" name="config.w32" role="src" />
    <file md5sum="8f9a93feba6ff23c4bc1bc2929babcc4" name="CREDITS" role="doc" />
    <file md5sum="34df3a274aa12b795417c65634c07f16" name="LICENSE" role="doc" />
    <file md5sum="a88bc3039991574186377fc15dd85ea3" name="Makefile.frag" role="src" />
    <file md5sum="491aea9e7732f8a60a426964acb8c3ed" name="Makefile.in" role="src" />
-   <file md5sum="ed85feea71d8f4e50b9ab8f720c50014" name="php_xdebug.h" role="src" />
+   <file md5sum="ef998d207f48408cb4ff1cfed75802b0" name="php_xdebug.h" role="src" />
    <file md5sum="6641593a27b51bf613038d37c63c86ce" name="README.rst" role="doc" />
    <file md5sum="7df6d434ac635c3aafb305b15b9f9828" name="usefulstuff.c" role="src" />
    <file md5sum="6144a01ef95a1e12b7aaf705529c5beb" name="usefulstuff.h" role="src" />
-   <file md5sum="51cfcfd8a3247e1d1322a3fc01187d89" name="xdebug.c" role="src" />
+   <file md5sum="7ea9c80ab558c2e281cb1d88503fcc6b" name="xdebug.c" role="src" />
    <file md5sum="0904708a0047be03bbab35a4753ec2e4" name="xdebug_branch_info.c" role="src" />
    <file md5sum="32c53e9e7b8f5326e64c86f5984cd8e4" name="xdebug_branch_info.h" role="src" />
    <file md5sum="4c91068b0af1e7e5e624b3ea33ff7ef3" name="xdebug_code_coverage.c" role="src" />
    <file md5sum="cf8892702f1c361430e7bc49305c24fe" name="xdebug_code_coverage.h" role="src" />
-   <file md5sum="0f0987d96b5f68e14934e02af9217bc3" name="xdebug_com.c" role="src" />
+   <file md5sum="d1285c46754f8bb6917ed97bf11fb154" name="xdebug_com.c" role="src" />
    <file md5sum="f6114a43247743ce2c11b69da98a117a" name="xdebug_com.h" role="src" />
    <file md5sum="22f067f273541035c8f7e5045fff73c8" name="xdebug_compat.c" role="src" />
    <file md5sum="32e8a5b9815c58d7b49c3631333f08fa" name="xdebug_compat.h" role="src" />
@@ -122,13 +113,13 @@ Mon, Jan 25, 2016 - xdebug 2.4.0RC4
    <file md5sum="fd16b78adbee75f96b88c0cca3f42b2e" name="xdebug_private.h" role="src" />
    <file md5sum="9beb43b06d9fd3091fc78fd6ca4e8287" name="xdebug_profiler.c" role="src" />
    <file md5sum="9282f2456d63157e26321c821e14b751" name="xdebug_profiler.h" role="src" />
-   <file md5sum="4cad3f44399f9ba7a4733aa2c30ec5ba" name="xdebug_set.c" role="src" />
+   <file md5sum="d605c1e4533058a638cb563f72699980" name="xdebug_set.c" role="src" />
    <file md5sum="bb6c996a8e3529e1abc21e69ae4e8121" name="xdebug_set.h" role="src" />
-   <file md5sum="b4bfb70533b015759a3a973cbe30ccde" name="xdebug_stack.c" role="src" />
+   <file md5sum="e9f484b4254613f053994a6ecbbb41d5" name="xdebug_stack.c" role="src" />
    <file md5sum="08e2e02f37faebb35ec88f4cb0e87153" name="xdebug_stack.h" role="src" />
    <file md5sum="08edcec14b70c297f7c70bae9f1da235" name="xdebug_str.c" role="src" />
    <file md5sum="2b731180bf163537b25b6b88a1d9edad" name="xdebug_str.h" role="src" />
-   <file md5sum="517438014dba40fcd0e323a08405b6d0" name="xdebug_superglobals.c" role="src" />
+   <file md5sum="8d68f3792fea9d28317084cd3be165fe" name="xdebug_superglobals.c" role="src" />
    <file md5sum="aac085d7cc5153580b0ddca572b97c43" name="xdebug_superglobals.h" role="src" />
    <file md5sum="676cdb94e7dbe8745aaff6134e0ef98d" name="xdebug_tracing.c" role="src" />
    <file md5sum="926db348730ca000784fd85bfcef1bb1" name="xdebug_tracing.h" role="src" />
@@ -157,6 +148,42 @@ Mon, Jan 25, 2016 - xdebug 2.4.0RC4
  <providesextension>xdebug</providesextension>
  <zendextsrcrelease />
  <changelog>
+  <release>
+   <date>2016-01-25</date>
+   <time>20:48:33</time>
+   <version>
+    <release>2.4.0RC4</release>
+    <api>2.4.0RC4</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD style</license>
+   <notes>
+Mon, Jan 25, 2016 - xdebug 2.4.0RC4
+
+= Fixed bugs:
+
+  - Fixed issue #1220: Segmentation fault if var_dump() output is too large.
+  - Fixed issue #1223: Xdebug crashes on PHP 7 when doing a DBGp eval command.
+  - Fixed issue #1229: Issues with GCC 4.8, which in -O2 move removes some
+    required code.
+  - Fixed issue #1235: Xdebug does not compile against PHP 7.1-dev due to
+    ZEND_FETCH_STATIC_PROP*.
+  - Fixed issue #1236: Can&apos;t remove breakpoints with negative IDs.
+  - Fixed issue #1238: Xdebug crashes with SIGSEGV while enumerating references
+    in variables.
+  - Fixed issue #1239: Crash due to changes with the CATCH opcode&apos;s jump
+    mechanism in 7.1
+  - Fixed issue #1241: Xdebug doesn&apos;t handle FAST_RET and FAST_CALL opcodes for
+    branch/dead code analysis, and path coverage.
+  - Fixed issue #1245: xdebug_dump_superglobals dumps *uninitialized* with PHP
+    7.
+  - Fixed issue #1250: Add PHP version descriptors to debugging log and profile
+    files.
+   </notes>
+  </release>
   <release>
    <date>2015-12-12</date>
    <time>20:42:33</time>
@@ -213,31 +240,6 @@ Wed, Dec 02, 2015 - xdebug 2.4.0RC2
   - Fixed issue #1219: Set default value for xdebug.overload_var_dump to 2 to
     include file / line numbers by default
   - Use long for PHP 5, and zend_long for PHP 7 for ini settings in the globals
-   </notes>
-  </release>
-  <release>
-   <date>2015-12-12</date>
-   <time>20:42:33</time>
-   <version>
-    <release>2.4.0RC3</release>
-    <api>2.4.0RC3</api>
-   </version>
-   <stability>
-    <release>beta</release>
-    <api>beta</api>
-   </stability>
-   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD style</license>
-   <notes>
-Wed, Dec 12, 2015 - xdebug 2.4.0RC3
-
-= Fixed bugs:
-
-  - Fixed issue #1221: Sort out Windows x64 PHP 7 support
-  - Fixed issue #1229: Detect GCC 4.8 and disable optimisations when it is found
-
-= Others:
-
-  - Made the test suite work for Windows too. Finally, after 13 years.
    </notes>
   </release>
   <release>

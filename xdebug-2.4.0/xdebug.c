@@ -725,12 +725,17 @@ PHP_MINIT_FUNCTION(xdebug)
 #if PHP_VERSION_ID < 70000
 		XDEBUG_SET_OPCODE_OVERRIDE_COMMON(ZEND_SWITCH_FREE);
 #endif
+		XDEBUG_SET_OPCODE_OVERRIDE_COMMON(ZEND_CASE);
 		XDEBUG_SET_OPCODE_OVERRIDE_COMMON(ZEND_QM_ASSIGN);
 		XDEBUG_SET_OPCODE_OVERRIDE_COMMON(ZEND_DECLARE_LAMBDA_FUNCTION);
 		XDEBUG_SET_OPCODE_OVERRIDE_COMMON(ZEND_ADD_TRAIT);
 		XDEBUG_SET_OPCODE_OVERRIDE_COMMON(ZEND_BIND_TRAITS);
 #if PHP_VERSION_ID >= 50500
 		XDEBUG_SET_OPCODE_OVERRIDE_COMMON(ZEND_FAST_RET);
+#endif
+#if PHP_VERSION_ID >= 70000
+		XDEBUG_SET_OPCODE_OVERRIDE_COMMON(ZEND_ROPE_ADD);
+		XDEBUG_SET_OPCODE_OVERRIDE_COMMON(ZEND_ROPE_END);
 #endif
 	}
 
@@ -887,12 +892,17 @@ PHP_MSHUTDOWN_FUNCTION(xdebug)
 #if PHP_VERSION_ID < 70000
 			zend_set_user_opcode_handler(ZEND_SWITCH_FREE, NULL);
 #endif
+			zend_set_user_opcode_handler(ZEND_CASE, NULL);
 			zend_set_user_opcode_handler(ZEND_QM_ASSIGN, NULL);
 			zend_set_user_opcode_handler(ZEND_DECLARE_LAMBDA_FUNCTION, NULL);
 			zend_set_user_opcode_handler(ZEND_ADD_TRAIT, NULL);
 			zend_set_user_opcode_handler(ZEND_BIND_TRAITS, NULL);
 #if PHP_VERSION_ID >= 50500
 			zend_set_user_opcode_handler(ZEND_FAST_RET, NULL);
+#endif
+#if PHP_VERSION_ID >= 70000
+			zend_set_user_opcode_handler(ZEND_ROPE_ADD, NULL);
+			zend_set_user_opcode_handler(ZEND_ROPE_END, NULL);
 #endif
 #ifndef ZTS
 		}
@@ -2190,8 +2200,18 @@ PHP_FUNCTION(xdebug_var_dump)
 	int     argc;
 	int     i, len;
 	char   *val;
-	
-	if (!XG(overload_var_dump)) {
+
+	/* Ignore our new shiny function if overload_var_dump is set to 0 *and* the
+	 * function is not being called as xdebug_var_dump() (usually, that'd be
+	 * the overloaded var_dump() of course). Fixes issue 1262. */
+	if (
+		!XG(overload_var_dump)
+#if PHP_VERSION_ID >= 70000
+		&& (strcmp("xdebug_var_dump", execute_data->func->common.function_name->val) != 0)
+#else
+		&& (strcmp("xdebug_var_dump", EG(current_execute_data)->function_state.function->common.function_name) != 0)
+#endif
+	) {
 		XG(orig_var_dump_func)(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 		return;
 	}
