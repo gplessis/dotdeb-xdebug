@@ -273,7 +273,7 @@ PHP_INI_BEGIN()
 	STD_PHP_INI_ENTRY("xdebug.halt_level",        "0",                  PHP_INI_ALL,    OnUpdateLong,   halt_level,        zend_xdebug_globals, xdebug_globals)
 	STD_PHP_INI_ENTRY("xdebug.max_nesting_level", "256",                PHP_INI_ALL,    OnUpdateLong,   max_nesting_level, zend_xdebug_globals, xdebug_globals)
 	STD_PHP_INI_ENTRY("xdebug.max_stack_frames",  "-1",                 PHP_INI_ALL,    OnUpdateLong,   max_stack_frames,  zend_xdebug_globals, xdebug_globals)
-	STD_PHP_INI_BOOLEAN("xdebug.overload_var_dump", "2",                PHP_INI_ALL,    OnUpdateBool,   overload_var_dump, zend_xdebug_globals, xdebug_globals)
+	STD_PHP_INI_ENTRY("xdebug.overload_var_dump", "2",                  PHP_INI_ALL,    OnUpdateLong,   overload_var_dump, zend_xdebug_globals, xdebug_globals)
 	STD_PHP_INI_BOOLEAN("xdebug.show_error_trace",  "0",                PHP_INI_ALL,    OnUpdateBool,   show_error_trace,  zend_xdebug_globals, xdebug_globals)
 	STD_PHP_INI_BOOLEAN("xdebug.show_exception_trace",  "0",            PHP_INI_ALL,    OnUpdateBool,   show_ex_trace,     zend_xdebug_globals, xdebug_globals)
 	STD_PHP_INI_BOOLEAN("xdebug.show_local_vars", "0",                  PHP_INI_ALL,    OnUpdateBool,   show_local_vars,   zend_xdebug_globals, xdebug_globals)
@@ -338,7 +338,7 @@ static void php_xdebug_init_globals (zend_xdebug_globals *xg TSRMLS_DC)
 	xg->previous_file        = NULL;
 	xg->previous_mark_filename = "";
 	xg->previous_mark_file     = NULL;
-	xg->paths_stack = xdebug_path_info_ctor();
+	xg->paths_stack = NULL;
 	xg->branches.size        = 0;
 	xg->branches.last_branch_nr = NULL;
 	xg->do_code_coverage     = 0;
@@ -360,6 +360,7 @@ static void php_xdebug_init_globals (zend_xdebug_globals *xg TSRMLS_DC)
 	xg->remote_enabled       = 0;
 	xg->breakpoints_allowed  = 0;
 	xg->profiler_enabled     = 0;
+	xg->do_monitor_functions = 0;
 
 	xdebug_llist_init(&xg->server, xdebug_superglobals_dump_dtor);
 	xdebug_llist_init(&xg->get, xdebug_superglobals_dump_dtor);
@@ -1209,6 +1210,10 @@ PHP_RINIT_FUNCTION(xdebug)
 	/* Signal that we're in a request now */
 	XG(in_execution) = 1;
 
+	XG(paths_stack) = xdebug_path_info_ctor();
+	XG(branches).size = 0;
+	XG(branches).last_branch_nr = NULL;
+
 	return SUCCESS;
 }
 
@@ -1234,12 +1239,14 @@ ZEND_MODULE_POST_ZEND_DEACTIVATE_D(xdebug)
 
 	if (XG(profile_file)) {
 		fclose(XG(profile_file));
+		XG(profile_file) = NULL;
 	}
 
 	if (XG(profile_filename)) {
 		xdfree(XG(profile_filename));
 	}
 	
+	XG(profiler_enabled) = 0;
 	xdebug_hash_destroy(XG(profile_filename_refs));
 	xdebug_hash_destroy(XG(profile_functionname_refs));
 	XG(profile_filename_refs) = NULL;
@@ -1310,6 +1317,7 @@ ZEND_MODULE_POST_ZEND_DEACTIVATE_D(xdebug)
 	/* Clean up path coverage array */
 	if (XG(paths_stack)) {
 		xdebug_path_info_dtor(XG(paths_stack));
+		XG(paths_stack) = NULL;
 	}
 	if (XG(branches).last_branch_nr) {
 		free(XG(branches).last_branch_nr);
@@ -1874,7 +1882,9 @@ void xdebug_execute(zend_op_array *op_array TSRMLS_DC)
 	}
 
 	if (XG(profiler_enabled)) {
-		xdebug_profiler_function_user_begin(fse TSRMLS_CC);
+		/* Calculate all elements for profile entries */
+		xdebug_profiler_add_function_details_user(fse, op_array TSRMLS_CC);
+		xdebug_profiler_function_begin(fse TSRMLS_CC);
 	}
 
 #if PHP_VERSION_ID < 70000
@@ -1890,14 +1900,16 @@ void xdebug_execute(zend_op_array *op_array TSRMLS_DC)
 	xdebug_old_execute_ex(execute_data TSRMLS_CC);
 #endif
 
+	if (XG(profiler_enabled)) {
+		xdebug_profiler_function_end(fse TSRMLS_CC);
+		xdebug_profiler_free_function_details(fse TSRMLS_CC);
+	}
+
 	/* Check which path has been used */
 	if (XG(do_code_coverage) && XG(code_coverage_unused)) {
 		xdebug_code_coverage_end_of_function(op_array TSRMLS_CC);
 	}
 
-	if (XG(profiler_enabled)) {
-		xdebug_profiler_function_user_end(fse, op_array TSRMLS_CC);
-	}
 	
 	if (XG(do_trace) && XG(trace_context) && (XG(trace_handler)->function_exit)) {
 		XG(trace_handler)->function_exit(XG(trace_context), fse, function_nr TSRMLS_CC);
@@ -1914,7 +1926,7 @@ void xdebug_execute(zend_op_array *op_array TSRMLS_DC)
 			if (op_array->fn_flags & ZEND_ACC_GENERATOR) {
 				if (XG(trace_handler)->generator_return_value) {
 # if PHP_VERSION_ID >= 70000
-					XG(trace_handler)->generator_return_value(XG(trace_context), fse, function_nr, (zend_generator*) EG(current_execute_data)->return_value TSRMLS_CC);
+					XG(trace_handler)->generator_return_value(XG(trace_context), fse, function_nr, (zend_generator*) execute_data->return_value TSRMLS_CC);
 # else
 					XG(trace_handler)->generator_return_value(XG(trace_context), fse, function_nr, (zend_generator*) EG(return_value_ptr_ptr) TSRMLS_CC);
 # endif
@@ -2028,7 +2040,8 @@ void xdebug_execute_internal(zend_execute_data *current_execute_data, int return
 	}
 
 	if (XG(profiler_enabled)) {
-		xdebug_profiler_function_internal_begin(fse TSRMLS_CC);
+		xdebug_profiler_add_function_details_internal(fse TSRMLS_CC);
+		xdebug_profiler_function_begin(fse TSRMLS_CC);
 	}
 #if PHP_VERSION_ID >= 70000
 	if (xdebug_old_execute_internal) {
@@ -2051,7 +2064,8 @@ void xdebug_execute_internal(zend_execute_data *current_execute_data, int return
 #endif
 
 	if (XG(profiler_enabled)) {
-		xdebug_profiler_function_internal_end(fse TSRMLS_CC);
+		xdebug_profiler_function_end(fse TSRMLS_CC);
+		xdebug_profiler_free_function_details(fse TSRMLS_CC);
 	}
 
 	/* Restore SOAP situation if needed */

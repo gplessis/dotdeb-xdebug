@@ -534,6 +534,9 @@ static void prefill_from_opcode(char *fn, zend_op opcode, int deadcode TSRMLS_DC
 		&& opcode.opcode != ZEND_OP_DATA
 		&& opcode.opcode != ZEND_ADD_INTERFACE
 		&& opcode.opcode != ZEND_TICKS
+#if PHP_VERSION_ID >= 50500
+		&& opcode.opcode != ZEND_FAST_CALL
+#endif
 	) {
 		xdebug_count_line(fn, opcode.lineno, 1, deadcode TSRMLS_CC);
 	}
@@ -592,11 +595,12 @@ static int xdebug_find_jump(zend_op_array *opa, unsigned int position, long *jmp
 		return 1;
 	} else if (opcode.opcode == ZEND_JMPZNZ) {
 #if PHP_VERSION_ID >= 70000
-		*jmp1 = XDEBUG_ZNODE_JMP_LINE(opcode.op2, position, base_address) * sizeof(zend_op);
+		*jmp1 = XDEBUG_ZNODE_JMP_LINE(opcode.op2, position, base_address);
+		*jmp2 = (int32_t) (position + ((int32_t)opcode.extended_value / sizeof(zend_op)));
 #else
 		*jmp1 = XDEBUG_ZNODE_ELEM(opcode.op2, opline_num);
-#endif
 		*jmp2 = opcode.extended_value;
+#endif
 		return 1;
 #if PHP_VERSION_ID < 70000
 	} else if (opcode.opcode == ZEND_BRK || opcode.opcode == ZEND_CONT) {
@@ -663,15 +667,10 @@ static int xdebug_find_jump(zend_op_array *opa, unsigned int position, long *jmp
 #else
 		*jmp1 = ((long) XDEBUG_ZNODE_ELEM(opcode.op1, jmp_addr) - (long) base_address) / sizeof(zend_op);
 #endif
-		if (opcode.extended_value) {
-			*jmp2 = XDEBUG_ZNODE_ELEM(opcode.op2, opline_num);
-		}
+		*jmp2 = position + 1;
 		return 1;
 	} else if (opcode.opcode == ZEND_FAST_RET) {
-		*jmp1 = position + 1;
-		if (opcode.extended_value) {
-			*jmp2 = XDEBUG_ZNODE_ELEM(opcode.op2, opline_num);
-		}
+		*jmp1 = XDEBUG_JMP_EXIT;
 		return 1;
 #endif
 
