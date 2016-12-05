@@ -25,11 +25,11 @@ Xdebug also provides:
   <email>derick@xdebug.org</email>
   <active>yes</active>
  </lead>
- <date>2016-08-02</date>
- <time>09:36:30</time>
+ <date>2016-12-04</date>
+ <time>19:16:03</time>
  <version>
-  <release>2.4.1</release>
-  <api>2.4.1</api>
+  <release>2.5.0</release>
+  <api>2.5.0</api>
  </version>
  <stability>
   <release>stable</release>
@@ -37,24 +37,26 @@ Xdebug also provides:
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD style</license>
  <notes>
-Tue, Aug 02, 2016 - xdebug 2.4.1
+Sun, Dec  4, 2016 - xdebug 2.5.0
+
++ Added features:
+
+  - Implemented issue #1232: add memory delta to HTML traces
+  - Implemented issue #1365: Allow remote_connect_back to be set through
+    XDEBUG_CONFIG
 
 = Fixed bugs:
 
-  - Fixed issue #1106: A thrown Exception after a class with __debugInfo gives
-    2 errors
-  - Fixed issue #1241: FAST_CALL/FAST_RET take #2
-  - Fixed issue #1246: Path and branch coverage should be initialised per
-    request, not globally
-  - Fixed issue #1263: Code coverage segmentation fault with opcache enabled
-  - Fixed issue #1277: Crash when using a userland function from RSHUTDOWN with
-    profiling enabled
-  - Fixed issue #1282: var_dump() of integers &gt; 32 bit is broken on Windows
-  - Fixed issue #1288: Segfault when uncaught exception message does not
-    contain &quot; in &quot;
-  - Fixed issue #1291: Debugclient installation fails on Mac OS X
-  - Fixed issue #1326: Tracing and generators crashes with PHP 7.x
-  - Fixed issue #1333: Profiler accesses memory structures after freeing
+  - Fixed issue #1168: Added defensive check to prevent infinite loop
+  - Fixed issue #1242: Xdebug on Windows with Eclipse has issues with
+    breakpoint IDs
+  - Fixed issue #1343: Wrong values of numerical keys outside 32bit range
+  - Fixed issue #1357: Function signature using variadics is reported as being
+    not executed
+  - Fixed issue #1361: Remote debugging connection issues with Windows (Anatol
+    Belski)
+  - Fixed issue #1373: Crash in zend_hash_apply_with_arguments when debugging,
+    due to unset symbol table
  </notes>
  <contents>
   <dir name="/">
@@ -79,49 +81,49 @@ Tue, Aug 02, 2016 - xdebug 2.4.1
    <file md5sum="5afe8eb5573965dfb58378e4e46f3813" name="debugclient/install-sh" role="src" />
    <file md5sum="a18aadbac8e9327d347421eaf10334ee" name="debugclient/LICENSE" role="src" />
    <file md5sum="d6b4129d1b30e56415d267e320c00c02" name="debugclient/ltmain.sh" role="src" />
-   <file md5sum="f3ddb70110948afc9a8dddf1dcc5e313" name="debugclient/main.c" role="src" />
+   <file md5sum="9003dbc7b1fc67f75ecadcea98ce1d0e" name="debugclient/main.c" role="src" />
    <file md5sum="542c07a45706363be2d822fd107fca3d" name="debugclient/Makefile.in" role="src" />
    <file md5sum="d41d8cd98f00b204e9800998ecf8427e" name="debugclient/missing" role="src" />
    <file md5sum="20af8d0d8c9b4478a446c1dee0a0c0f0" name="debugclient/mkinstalldirs" role="src" />
    <file md5sum="b5fc597bbe6e45044998dd2608104cc9" name="debugclient/usefulstuff.c" role="src" />
    <file md5sum="462d3f396dfb100d67b4e89d22e81382" name="debugclient/usefulstuff.h" role="src" />
-   <file md5sum="c18ed6eb29fe6e38d5edbd6a99261529" name="config.m4" role="src" />
+   <file md5sum="98da6351cc29020f50ee65fc286e80de" name="config.m4" role="src" />
    <file md5sum="32847cc5a7d1a8eea77b817f6a168b11" name="config.w32" role="src" />
    <file md5sum="8f9a93feba6ff23c4bc1bc2929babcc4" name="CREDITS" role="doc" />
    <file md5sum="34df3a274aa12b795417c65634c07f16" name="LICENSE" role="doc" />
    <file md5sum="a88bc3039991574186377fc15dd85ea3" name="Makefile.frag" role="src" />
    <file md5sum="491aea9e7732f8a60a426964acb8c3ed" name="Makefile.in" role="src" />
-   <file md5sum="04e20e4aa71231b91bb9dabffb681e04" name="php_xdebug.h" role="src" />
+   <file md5sum="bdafd49ad3678ff3d4dc669ccc458bb6" name="php_xdebug.h" role="src" />
    <file md5sum="6641593a27b51bf613038d37c63c86ce" name="README.rst" role="doc" />
    <file md5sum="7df6d434ac635c3aafb305b15b9f9828" name="usefulstuff.c" role="src" />
    <file md5sum="6144a01ef95a1e12b7aaf705529c5beb" name="usefulstuff.h" role="src" />
-   <file md5sum="6074f9dc22ff4f0932db168628716c56" name="xdebug.c" role="src" />
-   <file md5sum="890808517fc5c3186272e73be1df8715" name="xdebug_branch_info.c" role="src" />
+   <file md5sum="1c05f44707db7c9dc0dfde9656415ddc" name="xdebug.c" role="src" />
+   <file md5sum="357232c9aad972d5ce065883583c6b25" name="xdebug_branch_info.c" role="src" />
    <file md5sum="32c53e9e7b8f5326e64c86f5984cd8e4" name="xdebug_branch_info.h" role="src" />
-   <file md5sum="d2080a1859656a9a7703ecddf7dd4d51" name="xdebug_code_coverage.c" role="src" />
-   <file md5sum="cf8892702f1c361430e7bc49305c24fe" name="xdebug_code_coverage.h" role="src" />
-   <file md5sum="d1285c46754f8bb6917ed97bf11fb154" name="xdebug_com.c" role="src" />
-   <file md5sum="f6114a43247743ce2c11b69da98a117a" name="xdebug_com.h" role="src" />
+   <file md5sum="7cc928b1c927b8045169ecdfffe92bd5" name="xdebug_code_coverage.c" role="src" />
+   <file md5sum="e280fbdde920e4709e944b2139efa497" name="xdebug_code_coverage.h" role="src" />
+   <file md5sum="ce312d6b54695cdacb4348aafe24a79b" name="xdebug_com.c" role="src" />
+   <file md5sum="a3ffe5c458a1ec3e8b39ed8f6d4c30ab" name="xdebug_com.h" role="src" />
    <file md5sum="22f067f273541035c8f7e5045fff73c8" name="xdebug_compat.c" role="src" />
    <file md5sum="32e8a5b9815c58d7b49c3631333f08fa" name="xdebug_compat.h" role="src" />
    <file md5sum="755515aeaaac4fb7739563897f25eab1" name="xdebug_handlers.c" role="src" />
    <file md5sum="3ee8078ebd217c3c9ce692a4c5689d73" name="xdebug_handlers.h" role="src" />
-   <file md5sum="1368a70054b2e46c369fdb60d099b955" name="xdebug_handler_dbgp.c" role="src" />
+   <file md5sum="a41e5d968f7777e40c44db16175b64d4" name="xdebug_handler_dbgp.c" role="src" />
    <file md5sum="6e2a8642ad769fb0fad234b6567bfe6e" name="xdebug_handler_dbgp.h" role="src" />
    <file md5sum="d519346cf080248d88a03bc64e06ab35" name="xdebug_hash.c" role="src" />
    <file md5sum="3046c77469cdbe52fe3f6aa346e35724" name="xdebug_hash.h" role="src" />
-   <file md5sum="2e2522cbd6f0f899cf6581121d66a82f" name="xdebug_llist.c" role="src" />
+   <file md5sum="ea4667d09dbbf49184f22c810468a71a" name="xdebug_llist.c" role="src" />
    <file md5sum="b26fc856404cb6745781fcfd0c7d2542" name="xdebug_llist.h" role="src" />
    <file md5sum="bc89b9b19fd05d3a7ec200f5e7f35650" name="xdebug_mm.h" role="src" />
    <file md5sum="9b7556c01cfb1dd4c37542ff9b5dbb14" name="xdebug_monitor.c" role="src" />
    <file md5sum="48dea7d5c347ea1f16ab1af728b61e54" name="xdebug_monitor.h" role="src" />
    <file md5sum="71b2c40e3be58d79f7bca6766ed043e0" name="xdebug_private.c" role="src" />
-   <file md5sum="ac2546713e5a7b58bbd9f601af9229f9" name="xdebug_private.h" role="src" />
+   <file md5sum="22de319af9eaa94fcc73fa246fe278c0" name="xdebug_private.h" role="src" />
    <file md5sum="049bd18fc33755d890980b4bfc847007" name="xdebug_profiler.c" role="src" />
    <file md5sum="df7bfee261ea9317b35f9d3b3e259beb" name="xdebug_profiler.h" role="src" />
    <file md5sum="d605c1e4533058a638cb563f72699980" name="xdebug_set.c" role="src" />
    <file md5sum="bb6c996a8e3529e1abc21e69ae4e8121" name="xdebug_set.h" role="src" />
-   <file md5sum="df5290b2d4f0e00f840cfd31c3087559" name="xdebug_stack.c" role="src" />
+   <file md5sum="4eb952161c42d385a30d27f8be891b4b" name="xdebug_stack.c" role="src" />
    <file md5sum="08e2e02f37faebb35ec88f4cb0e87153" name="xdebug_stack.h" role="src" />
    <file md5sum="08edcec14b70c297f7c70bae9f1da235" name="xdebug_str.c" role="src" />
    <file md5sum="2b731180bf163537b25b6b88a1d9edad" name="xdebug_str.h" role="src" />
@@ -133,9 +135,9 @@ Tue, Aug 02, 2016 - xdebug 2.4.1
    <file md5sum="d3f513da766829264343630644269441" name="xdebug_trace_textual.h" role="src" />
    <file md5sum="f1c71d96d48563a68e137fbc4fe413b3" name="xdebug_trace_computerized.c" role="src" />
    <file md5sum="7b45bdec85093d9f16b1885c9cc0e780" name="xdebug_trace_computerized.h" role="src" />
-   <file md5sum="4fce0465298b4bbb8397570d485cbcc4" name="xdebug_trace_html.c" role="src" />
+   <file md5sum="9d34d4325f84a0cdd87677548c21ff19" name="xdebug_trace_html.c" role="src" />
    <file md5sum="46bbbf32ba6522a91fbfd461eba349e2" name="xdebug_trace_html.h" role="src" />
-   <file md5sum="6f0887df818d509dff0ff050c30de5dd" name="xdebug_var.c" role="src" />
+   <file md5sum="62067fa4096356eb1b8d31fe11092d36" name="xdebug_var.c" role="src" />
    <file md5sum="e01755f90da0e45d02a62bb0e1961aec" name="xdebug_var.h" role="src" />
    <file md5sum="136ff917e7bc5ef739cc93aed4f4e426" name="xdebug_xml.c" role="src" />
    <file md5sum="54a5229e204cea7542a4e6e4e1dec2ab" name="xdebug_xml.h" role="src" />
@@ -144,7 +146,7 @@ Tue, Aug 02, 2016 - xdebug 2.4.1
  <dependencies>
   <required>
    <php>
-    <min>5.4.0</min>
+    <min>5.5.0</min>
    </php>
    <pearinstaller>
     <min>1.9.1</min>
@@ -155,11 +157,11 @@ Tue, Aug 02, 2016 - xdebug 2.4.1
  <zendextsrcrelease />
  <changelog>
   <release>
-   <date>2016-03-03</date>
-   <time>08:47:08</time>
+   <date>2016-11-12</date>
+   <time>14:28:08</time>
    <version>
-    <release>2.4.0</release>
-    <api>2.4.0</api>
+    <release>2.5.0RC1</release>
+    <api>2.5.0RC1</api>
    </version>
    <stability>
     <release>stable</release>
@@ -167,18 +169,56 @@ Tue, Aug 02, 2016 - xdebug 2.4.1
    </stability>
    <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD style</license>
    <notes>
-Thu, Mar 03, 2016 - xdebug 2.4.0
+Sat, Nov 12, 2016 - xdebug 2.5.0RC1
+
++ Added features:
+
+  - Implemented issue #998: Added support for IPv6 (Thomas Vanhaniemi)
+  - Implemented issue #1297: Initial PHP 7.1 support
 
 = Fixed bugs:
 
-  - Fixed issue #1258: Case in PHP 7.0 and code coverage
-  - Fixed issue #1261: segmentation fault in xdebug.so with PHP 7.0 version of
-    &apos;pkgtools&apos; due to spl_autoload()
-  - Fixed issue #1262: overload_var_dump=0 messes with xdebug_var_dump()
-  - Fixed issue #1266: xdebug_dump_superglobals() always dumps empty  stack on
-    PHP 7
-  - Fixed issue #1267: AIX build issues
-  - Fixed issue #1270: String parsing marked not covered with PHP 7
+  - Fixed issue #1295: Apache crashes (SIGSEGV) when trying to establish
+    connection when sockfd is large
+  - Fixed issue #1303: POLLRDHUP is not supported outside of Gnu/Linux
+  - Fixed issue #1331: Segfault in code coverage
+
+- Removed features:
+
+  - Support for PHP versions lower than PHP 5.5 has been dropped
+   </notes>
+  </release>
+  <release>
+   <date>2016-08-02</date>
+   <time>11:47:08</time>
+   <version>
+    <release>2.4.1</release>
+    <api>2.4.1</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD style</license>
+   <notes>
+Tue, Aug 02, 2016 - xdebug 2.4.1
+
+= Fixed bugs:
+
+  - Fixed issue #1106: A thrown Exception after a class with __debugInfo gives
+    2 errors
+  - Fixed issue #1241: FAST_CALL/FAST_RET take #2
+  - Fixed issue #1246: Path and branch coverage should be initialised per
+    request, not globally
+  - Fixed issue #1263: Code coverage segmentation fault with opcache enabled
+  - Fixed issue #1277: Crash when using a userland function from RSHUTDOWN with
+    profiling enabled
+  - Fixed issue #1282: var_dump() of integers &gt; 32 bit is broken on Windows
+  - Fixed issue #1288: Segfault when uncaught exception message does not
+    contain &quot; in &quot;
+  - Fixed issue #1291: Debugclient installation fails on Mac OS X
+  - Fixed issue #1326: Tracing and generators crashes with PHP 7.x
+  - Fixed issue #1333: Profiler accesses memory structures after freeing
    </notes>
   </release>
   <release>
@@ -215,6 +255,33 @@ Mon, Jan 25, 2016 - xdebug 2.4.0RC4
     7.
   - Fixed issue #1250: Add PHP version descriptors to debugging log and profile
     files.
+   </notes>
+  </release>
+  <release>
+   <date>2016-03-03</date>
+   <time>08:47:08</time>
+   <version>
+    <release>2.4.0</release>
+    <api>2.4.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD style</license>
+   <notes>
+Thu, Mar 03, 2016 - xdebug 2.4.0
+
+= Fixed bugs:
+
+  - Fixed issue #1258: Case in PHP 7.0 and code coverage
+  - Fixed issue #1261: segmentation fault in xdebug.so with PHP 7.0 version of
+    &apos;pkgtools&apos; due to spl_autoload()
+  - Fixed issue #1262: overload_var_dump=0 messes with xdebug_var_dump()
+  - Fixed issue #1266: xdebug_dump_superglobals() always dumps empty  stack on
+    PHP 7
+  - Fixed issue #1267: AIX build issues
+  - Fixed issue #1270: String parsing marked not covered with PHP 7
    </notes>
   </release>
   <release>

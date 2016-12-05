@@ -459,6 +459,9 @@ void xdebug_env_config(TSRMLS_D)
 			continue;
 		}
 
+		if (strcasecmp(envvar, "remote_connect_back") == 0) {
+			name = "xdebug.remote_connect_back";
+		} else
 		if (strcasecmp(envvar, "remote_enable") == 0) {
 			name = "xdebug.remote_enable";
 		} else
@@ -737,6 +740,9 @@ PHP_MINIT_FUNCTION(xdebug)
 #if PHP_VERSION_ID >= 70000
 		XDEBUG_SET_OPCODE_OVERRIDE_COMMON(ZEND_ROPE_ADD);
 		XDEBUG_SET_OPCODE_OVERRIDE_COMMON(ZEND_ROPE_END);
+#endif
+#if PHP_VERSION_ID >= 70100
+		XDEBUG_SET_OPCODE_OVERRIDE_COMMON(ZEND_GENERATOR_CREATE);
 #endif
 	}
 
@@ -1655,6 +1661,9 @@ void xdebug_execute(zend_op_array *op_array TSRMLS_DC)
 	int                   clear = 0;
 	zval                 *return_val = NULL;
 #endif
+	xdebug_func           code_coverage_func_info;
+	char                 *code_coverage_function_name = NULL;
+	char                 *code_coverage_file_name = NULL;
 
 #if PHP_VERSION_ID >= 70000
 	/* For PHP 7, we need to reset the opline to the start, so that all opcode
@@ -1836,7 +1845,13 @@ void xdebug_execute(zend_op_array *op_array TSRMLS_DC)
 	fse->execute_data = EG(current_execute_data);
 #endif
 #if PHP_VERSION_ID >= 70000
+# if PHP_VERSION_ID >= 70100
+	if (ZEND_CALL_INFO(EG(current_execute_data)) & ZEND_CALL_HAS_SYMBOL_TABLE) {
+		fse->symbol_table = EG(current_execute_data)->symbol_table;
+	}
+# else
 	fse->symbol_table = EG(current_execute_data)->symbol_table;
+# endif
 	if (Z_OBJ(EG(current_execute_data)->This)) {
 		fse->This = &EG(current_execute_data)->This;
 	} else {
@@ -1864,7 +1879,17 @@ void xdebug_execute(zend_op_array *op_array TSRMLS_DC)
 	}
 
 	if (XG(do_code_coverage) && XG(code_coverage_unused)) {
-		xdebug_code_coverage_start_of_function(op_array TSRMLS_CC);
+		code_coverage_file_name = xdstrdup(STR_NAME_VAL(op_array->filename));
+		xdebug_build_fname_from_oparray(&code_coverage_func_info, op_array TSRMLS_CC);
+		code_coverage_function_name = xdebug_func_format(&code_coverage_func_info TSRMLS_CC);
+		xdebug_code_coverage_start_of_function(op_array, code_coverage_function_name TSRMLS_CC);
+
+		if (code_coverage_func_info.class) {
+			xdfree(code_coverage_func_info.class);
+		}
+		if (code_coverage_func_info.function) {
+			xdfree(code_coverage_func_info.function);
+		}
 	}
 
 	/* If we're in an eval, we need to create an ID for it. This ID however
@@ -1907,7 +1932,9 @@ void xdebug_execute(zend_op_array *op_array TSRMLS_DC)
 
 	/* Check which path has been used */
 	if (XG(do_code_coverage) && XG(code_coverage_unused)) {
-		xdebug_code_coverage_end_of_function(op_array TSRMLS_CC);
+		xdebug_code_coverage_end_of_function(op_array, code_coverage_file_name, code_coverage_function_name TSRMLS_CC);
+		xdfree(code_coverage_function_name);
+		xdfree(code_coverage_file_name);
 	}
 
 	
@@ -2021,7 +2048,7 @@ void xdebug_execute_internal(zend_execute_data *current_execute_data, int return
 	fse->function.internal = 1;
 
 	function_nr = XG(function_count);
-	if (XG(do_trace) && XG(trace_context) && (XG(trace_handler)->function_entry)) {
+	if (XG(do_trace) && fse->function.type != XFUNC_ZEND_PASS && XG(trace_context) && (XG(trace_handler)->function_entry)) {
 		XG(trace_handler)->function_entry(XG(trace_context), fse, function_nr TSRMLS_CC);
 	}
 
@@ -2073,17 +2100,17 @@ void xdebug_execute_internal(zend_execute_data *current_execute_data, int return
 		zend_error_cb = tmp_error_cb;
 	}
 
-	if (XG(do_trace) && XG(trace_context) && (XG(trace_handler)->function_exit)) {
+	if (XG(do_trace) && fse->function.type != XFUNC_ZEND_PASS && XG(trace_context) && (XG(trace_handler)->function_exit)) {
 		XG(trace_handler)->function_exit(XG(trace_context), fse, function_nr TSRMLS_CC);
 	}
 
 	/* Store return value in the trace file */
 #if PHP_VERSION_ID >= 70000
-	if (XG(collect_return) && do_return && XG(do_trace) && XG(trace_context) && return_value && XG(trace_handler)->return_value) {
+	if (XG(collect_return) && do_return && XG(do_trace) && fse->function.type != XFUNC_ZEND_PASS && XG(trace_context) && return_value && XG(trace_handler)->return_value) {
 		XG(trace_handler)->return_value(XG(trace_context), fse, function_nr, return_value TSRMLS_CC);
 	}
 #else
-	if (XG(collect_return) && do_return && XG(do_trace) && XG(trace_context) && EG(opline_ptr) && current_execute_data->opline) {
+	if (XG(collect_return) && do_return && XG(do_trace) && fse->function.type != XFUNC_ZEND_PASS && XG(trace_context) && EG(opline_ptr) && current_execute_data->opline) {
 		cur_opcode = *EG(opline_ptr);
 		if (cur_opcode) {
 			zval *ret = xdebug_zval_ptr(cur_opcode->result_type, &(cur_opcode->result), current_execute_data TSRMLS_CC);
@@ -2298,7 +2325,9 @@ PHP_FUNCTION(xdebug_debug_zval)
 		WRONG_PARAM_COUNT;
 	}
 
-#if PHP_VERSION_ID >= 70000
+#if PHP_VERSION_ID >= 70100
+	if (!(ZEND_CALL_INFO(EG(current_execute_data)->prev_execute_data) & ZEND_CALL_HAS_SYMBOL_TABLE)) {
+#elif PHP_VERSION_ID >= 70000
 	if (!EG(current_execute_data)->prev_execute_data->symbol_table) {
 #else
 	if (!EG(active_symbol_table)) {
@@ -2370,7 +2399,9 @@ PHP_FUNCTION(xdebug_debug_zval_stdout)
 		WRONG_PARAM_COUNT;
 	}
 
-#if PHP_VERSION_ID >= 70000
+#if PHP_VERSION_ID >= 70100
+	if (!(ZEND_CALL_INFO(EG(current_execute_data)->prev_execute_data) & ZEND_CALL_HAS_SYMBOL_TABLE)) {
+#elif PHP_VERSION_ID >= 70000
 	if (!EG(current_execute_data)->prev_execute_data->symbol_table) {
 #else
 	if (!EG(active_symbol_table)) {
@@ -2542,8 +2573,14 @@ PHP_FUNCTION(xdebug_time_index)
 	RETURN_DOUBLE(xdebug_get_utime() - XG(start_time));
 }
 
+#if PHP_VERSION_ID >= 70100
+ZEND_DLEXPORT void xdebug_statement_call(zend_execute_data *frame)
+{
+	zend_op_array *op_array = &frame->func->op_array;
+#else
 ZEND_DLEXPORT void xdebug_statement_call(zend_op_array *op_array)
 {
+#endif
 	xdebug_llist_element *le;
 	xdebug_brk_info      *brk;
 	function_stack_entry *fse;

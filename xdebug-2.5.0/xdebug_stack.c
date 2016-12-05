@@ -18,6 +18,7 @@
 #include "php_xdebug.h"
 #include "xdebug_private.h"
 #include "xdebug_code_coverage.h"
+#include "xdebug_com.h"
 #include "xdebug_compat.h"
 #include "xdebug_monitor.h"
 #include "xdebug_profiler.h"
@@ -113,7 +114,9 @@ static void dump_used_var_with_contents(void *htmlq, xdebug_hash_element* he, vo
 		return;
 	}
 
-#if PHP_VERSION_ID >= 70000
+#if PHP_VERSION_ID >= 70100
+	if (!(ZEND_CALL_INFO(EG(current_execute_data)) & ZEND_CALL_HAS_SYMBOL_TABLE)) {
+#elif PHP_VERSION_ID >= 70000
 	if (!EG(current_execute_data)->symbol_table) {
 #else
 	if (!EG(active_symbol_table)) {
@@ -587,8 +590,6 @@ static char *get_printable_stack(int html, int error_type, char *buffer, const c
 	return str.d;
 }
 
-#define XDEBUG_LOG_PRINT(fs, string, ...) if (fs) { fprintf(fs, string, ## __VA_ARGS__); }
-
 #if PHP_VERSION_ID >= 70000
 # define XDEBUG_ZEND_HASH_STR_FIND(ht, str, size, var) var = zend_hash_str_find(Z_ARRVAL(ht), str, size);
 # define XDEBUG_ZEND_HASH_RETURN_TYPE zval *
@@ -620,14 +621,14 @@ void xdebug_init_debugger(TSRMLS_D)
 		}
 		if (remote_addr) {
 			XDEBUG_LOG_PRINT(XG(remote_log_file), "I: Remote address found, connecting to %s:%ld.\n", XDEBUG_ZEND_HASH_RETURN_VALUE(remote_addr), (long int) XG(remote_port));
-			XG(context).socket = xdebug_create_socket(XDEBUG_ZEND_HASH_RETURN_VALUE(remote_addr), XG(remote_port));
+			XG(context).socket = xdebug_create_socket(XDEBUG_ZEND_HASH_RETURN_VALUE(remote_addr), XG(remote_port) TSRMLS_CC);
 		} else {
 			XDEBUG_LOG_PRINT(XG(remote_log_file), "W: Remote address not found, connecting to configured address/port: %s:%ld. :-|\n", XG(remote_host), (long int) XG(remote_port));
-			XG(context).socket = xdebug_create_socket(XG(remote_host), XG(remote_port));
+			XG(context).socket = xdebug_create_socket(XG(remote_host), XG(remote_port) TSRMLS_CC);
 		}
 	} else {
 		XDEBUG_LOG_PRINT(XG(remote_log_file), "I: Connecting to configured address/port: %s:%ld.\n", XG(remote_host), (long int) XG(remote_port));
-		XG(context).socket = xdebug_create_socket(XG(remote_host), XG(remote_port));
+		XG(context).socket = xdebug_create_socket(XG(remote_host), XG(remote_port) TSRMLS_CC);
 	}
 	if (XG(context).socket >= 0) {
 		XDEBUG_LOG_PRINT(XG(remote_log_file), "I: Connected to client. :-)\n");
@@ -1071,9 +1072,20 @@ static void xdebug_build_fname(xdebug_func *tmp, zend_execute_data *edata TSRMLS
 {
 	memset(tmp, 0, sizeof(xdebug_func));
 
+#if PHP_VERSION_ID >= 70100
+	if (edata && edata->func && edata->func == (zend_function*) &zend_pass_function) {
+		tmp->type     = XFUNC_ZEND_PASS;
+		tmp->function = xdstrdup("{zend_pass}");
+	} else
+#endif
+
 	if (edata && edata->func) {
 		tmp->type = XFUNC_NORMAL;
+#if PHP_VERSION_ID >= 70100
+		if ((Z_TYPE(edata->This)) == IS_OBJECT) {
+#else
 		if (edata->This.value.obj) {
+#endif
 			tmp->type = XFUNC_MEMBER;
 			if (edata->func->common.scope) {
 				if (strcmp(edata->func->common.scope->name->val, "class@anonymous") == 0) {
@@ -1383,11 +1395,12 @@ function_stack_entry *xdebug_add_stack_frame(zend_execute_data *zdata, zend_op_a
 		tmp->function.type     = XFUNC_NORMAL;
 
 	} else if (tmp->function.type & XFUNC_INCLUDES) {
+		tmp->lineno = 0;
 		if (opline_ptr) {
 			cur_opcode = *opline_ptr;
-			tmp->lineno = cur_opcode->lineno;
-		} else {
-			tmp->lineno = 0;
+			if (cur_opcode) {
+				tmp->lineno = cur_opcode->lineno;
+			}
 		}
 
 		if (tmp->function.type == XFUNC_EVAL) {
