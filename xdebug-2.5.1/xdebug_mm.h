@@ -15,58 +15,25 @@
    | Authors:  Derick Rethans <derick@xdebug.org>                         |
    +----------------------------------------------------------------------+
  */
-/* $Id: xdebug_set.c,v 1.5 2010-05-07 20:39:13 derick Exp $ */
 
-#include <stdlib.h>
-#include "xdebug_set.h"
+#ifndef __HAVE_XDEBUG_MM_H__
+#define __HAVE_XDEBUG_MM_H__
 
-xdebug_set *xdebug_set_create(unsigned int size)
-{
-	xdebug_set *tmp;
+/* Memory allocators */
+#if 0
+#define xdmalloc    emalloc
+#define xdcalloc    ecalloc
+#define xdrealloc   erealloc
+#define xdfree      efree
+#define xdstrdup    estrdup
+#define xdstrndup   estrndup
+#else
+#define xdmalloc    malloc
+#define xdcalloc    calloc
+#define xdrealloc   realloc
+#define xdfree      free
+#define xdstrdup    strdup
+#define xdstrndup   xdebug_strndup
+#endif
 
-	tmp = calloc(1, sizeof(xdebug_set));
-	tmp->size = size;
-	size = (size / 8) + 1 + ((size % 8) != 0);
-	tmp->setinfo = calloc(1, size);
-
-	return tmp;
-}
-
-void xdebug_set_free(xdebug_set *set)
-{
-	free(set->setinfo);
-	free(set);
-}
-
-void xdebug_set_add(xdebug_set *set, unsigned int position)
-{
-	unsigned char *byte;
-	unsigned int   bit;
- 
-	byte = &(set->setinfo[position / 8]);
-	bit  = position % 8;
-
-	*byte = *byte | 1 << bit;
-}
-
-void xdebug_set_remove(xdebug_set *set, unsigned int position)
-{
-	unsigned char *byte;
-	unsigned int   bit;
-
-	byte = &(set->setinfo[position / 8]);
-	bit  = position % 8;
-
-	*byte = *byte & ~(1 << bit);
-}
-
-int xdebug_set_in_ex(xdebug_set *set, unsigned int position, int noisy)
-{
-	unsigned char *byte;
-	unsigned int   bit;
-
-	byte = &(set->setinfo[position / 8]);
-	bit  = position % 8;
-
-	return (*byte & (1 << bit));
-}
+#endif

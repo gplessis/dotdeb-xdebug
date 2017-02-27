@@ -20,10 +20,10 @@
 #define PHP_XDEBUG_H
 
 #define XDEBUG_NAME       "Xdebug"
-#define XDEBUG_VERSION    "2.5.0"
+#define XDEBUG_VERSION    "2.5.1"
 #define XDEBUG_AUTHOR     "Derick Rethans"
-#define XDEBUG_COPYRIGHT  "Copyright (c) 2002-2016 by Derick Rethans"
-#define XDEBUG_COPYRIGHT_SHORT "Copyright (c) 2002-2016"
+#define XDEBUG_COPYRIGHT  "Copyright (c) 2002-2017 by Derick Rethans"
+#define XDEBUG_COPYRIGHT_SHORT "Copyright (c) 2002-2017"
 #define XDEBUG_URL        "http://xdebug.org"
 #define XDEBUG_URL_FAQ    "http://xdebug.org/docs/faq#api"
 
@@ -291,7 +291,7 @@ ZEND_END_MODULE_GLOBALS(xdebug)
 #else
 #define XG(v) (xdebug_globals.v)
 #endif
-	
+
 #endif
 
 

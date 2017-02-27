@@ -25,11 +25,11 @@ Xdebug also provides:
   <email>derick@xdebug.org</email>
   <active>yes</active>
  </lead>
- <date>2016-12-04</date>
- <time>19:16:03</time>
+ <date>2017-02-26</date>
+ <time>14:27:44</time>
  <version>
-  <release>2.5.0</release>
-  <api>2.5.0</api>
+  <release>2.5.1</release>
+  <api>2.5.1</api>
  </version>
  <stability>
   <release>stable</release>
@@ -37,26 +37,28 @@ Xdebug also provides:
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD style</license>
  <notes>
-Sun, Dec  4, 2016 - xdebug 2.5.0
-
-+ Added features:
-
-  - Implemented issue #1232: add memory delta to HTML traces
-  - Implemented issue #1365: Allow remote_connect_back to be set through
-    XDEBUG_CONFIG
+Sun, Feb 26, 2017 - xdebug 2.5.1
 
 = Fixed bugs:
 
-  - Fixed issue #1168: Added defensive check to prevent infinite loop
-  - Fixed issue #1242: Xdebug on Windows with Eclipse has issues with
-    breakpoint IDs
-  - Fixed issue #1343: Wrong values of numerical keys outside 32bit range
-  - Fixed issue #1357: Function signature using variadics is reported as being
-    not executed
-  - Fixed issue #1361: Remote debugging connection issues with Windows (Anatol
-    Belski)
-  - Fixed issue #1373: Crash in zend_hash_apply_with_arguments when debugging,
-    due to unset symbol table
+  - Fixed issue #1057: Add xdebug.ini of all settings to package
+  - Fixed issue #1165: DBGp: step_out skips subsequent function calls
+  - Fixed issue #1180: Code coverage crashes with non-standard start/stops
+  - Fixed issue #1278: Xdebug with PHP 7 does not handle prefill-from-oparray
+    for XDEBUG_CC_UNUSED
+  - Fixed issue #1300: Xdebug functions are not exposing their signature to
+    Reflection
+  - Fixed issue #1313: Arguments to __call() trampoline picked from the wrong
+    memory location
+  - Fixed issue #1329: While printing out a stack with and function parameters,
+    XDebug reads uninitialized zvals or free()d memory
+  - Fixed issue #1381: Code Coverage misses line due to missing FETCH_DIM_W
+    overload
+  - Fixed issue #1385: can not fetch IS_INDIRECT properties
+  - Fixed issue #1386: Executable code not shown as executed/executable
+  - Fixed issue #1392: Unable to compile on FreeBSD due to missing struct
+    definition
+  - Fixed issue #1394: Code coverage does not cover instanceof (in elseif)
  </notes>
  <contents>
   <dir name="/">
@@ -87,59 +89,60 @@ Sun, Dec  4, 2016 - xdebug 2.5.0
    <file md5sum="20af8d0d8c9b4478a446c1dee0a0c0f0" name="debugclient/mkinstalldirs" role="src" />
    <file md5sum="b5fc597bbe6e45044998dd2608104cc9" name="debugclient/usefulstuff.c" role="src" />
    <file md5sum="462d3f396dfb100d67b4e89d22e81382" name="debugclient/usefulstuff.h" role="src" />
-   <file md5sum="98da6351cc29020f50ee65fc286e80de" name="config.m4" role="src" />
+   <file md5sum="b6b7fb62067608b8e853ef27ad52cf52" name="config.m4" role="src" />
    <file md5sum="32847cc5a7d1a8eea77b817f6a168b11" name="config.w32" role="src" />
    <file md5sum="8f9a93feba6ff23c4bc1bc2929babcc4" name="CREDITS" role="doc" />
    <file md5sum="34df3a274aa12b795417c65634c07f16" name="LICENSE" role="doc" />
+   <file md5sum="c1355136765e8f65a2e69e7b8cafbba1" name="xdebug.ini" role="doc" />
    <file md5sum="a88bc3039991574186377fc15dd85ea3" name="Makefile.frag" role="src" />
    <file md5sum="491aea9e7732f8a60a426964acb8c3ed" name="Makefile.in" role="src" />
-   <file md5sum="bdafd49ad3678ff3d4dc669ccc458bb6" name="php_xdebug.h" role="src" />
+   <file md5sum="1a7de4f506e9fe155e1c6d83b268e1db" name="php_xdebug.h" role="src" />
    <file md5sum="6641593a27b51bf613038d37c63c86ce" name="README.rst" role="doc" />
-   <file md5sum="7df6d434ac635c3aafb305b15b9f9828" name="usefulstuff.c" role="src" />
+   <file md5sum="ca7920b988c0263a46463028586f0e28" name="usefulstuff.c" role="src" />
    <file md5sum="6144a01ef95a1e12b7aaf705529c5beb" name="usefulstuff.h" role="src" />
-   <file md5sum="1c05f44707db7c9dc0dfde9656415ddc" name="xdebug.c" role="src" />
-   <file md5sum="357232c9aad972d5ce065883583c6b25" name="xdebug_branch_info.c" role="src" />
+   <file md5sum="8eda70b1f096b1d0dcc583451dd11bac" name="xdebug.c" role="src" />
+   <file md5sum="cccd01899aff98d2c00ede4fe3a0c108" name="xdebug_branch_info.c" role="src" />
    <file md5sum="32c53e9e7b8f5326e64c86f5984cd8e4" name="xdebug_branch_info.h" role="src" />
-   <file md5sum="7cc928b1c927b8045169ecdfffe92bd5" name="xdebug_code_coverage.c" role="src" />
+   <file md5sum="5a42294c46a9d2f084d2290c7f913ffc" name="xdebug_code_coverage.c" role="src" />
    <file md5sum="e280fbdde920e4709e944b2139efa497" name="xdebug_code_coverage.h" role="src" />
-   <file md5sum="ce312d6b54695cdacb4348aafe24a79b" name="xdebug_com.c" role="src" />
+   <file md5sum="d9b27d903916dafdef920ab41cdf2be7" name="xdebug_com.c" role="src" />
    <file md5sum="a3ffe5c458a1ec3e8b39ed8f6d4c30ab" name="xdebug_com.h" role="src" />
    <file md5sum="22f067f273541035c8f7e5045fff73c8" name="xdebug_compat.c" role="src" />
    <file md5sum="32e8a5b9815c58d7b49c3631333f08fa" name="xdebug_compat.h" role="src" />
    <file md5sum="755515aeaaac4fb7739563897f25eab1" name="xdebug_handlers.c" role="src" />
-   <file md5sum="3ee8078ebd217c3c9ce692a4c5689d73" name="xdebug_handlers.h" role="src" />
-   <file md5sum="a41e5d968f7777e40c44db16175b64d4" name="xdebug_handler_dbgp.c" role="src" />
-   <file md5sum="6e2a8642ad769fb0fad234b6567bfe6e" name="xdebug_handler_dbgp.h" role="src" />
-   <file md5sum="d519346cf080248d88a03bc64e06ab35" name="xdebug_hash.c" role="src" />
-   <file md5sum="3046c77469cdbe52fe3f6aa346e35724" name="xdebug_hash.h" role="src" />
-   <file md5sum="ea4667d09dbbf49184f22c810468a71a" name="xdebug_llist.c" role="src" />
-   <file md5sum="b26fc856404cb6745781fcfd0c7d2542" name="xdebug_llist.h" role="src" />
-   <file md5sum="bc89b9b19fd05d3a7ec200f5e7f35650" name="xdebug_mm.h" role="src" />
+   <file md5sum="7d23181220506162d9e126141e617da3" name="xdebug_handlers.h" role="src" />
+   <file md5sum="f757cbd8fc1875fec64014a0ebb11fcb" name="xdebug_handler_dbgp.c" role="src" />
+   <file md5sum="15c804c86929222f23c26ef57960fdc8" name="xdebug_handler_dbgp.h" role="src" />
+   <file md5sum="b6891a226169e6cc7afba5abb5050fff" name="xdebug_hash.c" role="src" />
+   <file md5sum="a441388af62f931722d2e2d66042046e" name="xdebug_hash.h" role="src" />
+   <file md5sum="a59c0738516785a4c0eb621697dce9d3" name="xdebug_llist.c" role="src" />
+   <file md5sum="9b475abdef8ce6406100874047ab3558" name="xdebug_llist.h" role="src" />
+   <file md5sum="78dd526f10afe8573381cd122c63f477" name="xdebug_mm.h" role="src" />
    <file md5sum="9b7556c01cfb1dd4c37542ff9b5dbb14" name="xdebug_monitor.c" role="src" />
    <file md5sum="48dea7d5c347ea1f16ab1af728b61e54" name="xdebug_monitor.h" role="src" />
    <file md5sum="71b2c40e3be58d79f7bca6766ed043e0" name="xdebug_private.c" role="src" />
-   <file md5sum="22de319af9eaa94fcc73fa246fe278c0" name="xdebug_private.h" role="src" />
-   <file md5sum="049bd18fc33755d890980b4bfc847007" name="xdebug_profiler.c" role="src" />
+   <file md5sum="c03ed72a28ac8d843f2083c97157fb09" name="xdebug_private.h" role="src" />
+   <file md5sum="49ead1b9943882239b4a774dc8470dd4" name="xdebug_profiler.c" role="src" />
    <file md5sum="df7bfee261ea9317b35f9d3b3e259beb" name="xdebug_profiler.h" role="src" />
-   <file md5sum="d605c1e4533058a638cb563f72699980" name="xdebug_set.c" role="src" />
+   <file md5sum="3ef0151c6a8465dda8d96bc377f9beb8" name="xdebug_set.c" role="src" />
    <file md5sum="bb6c996a8e3529e1abc21e69ae4e8121" name="xdebug_set.h" role="src" />
-   <file md5sum="4eb952161c42d385a30d27f8be891b4b" name="xdebug_stack.c" role="src" />
+   <file md5sum="b188c2189812f9b4cef8685e6017dd6f" name="xdebug_stack.c" role="src" />
    <file md5sum="08e2e02f37faebb35ec88f4cb0e87153" name="xdebug_stack.h" role="src" />
    <file md5sum="08edcec14b70c297f7c70bae9f1da235" name="xdebug_str.c" role="src" />
    <file md5sum="2b731180bf163537b25b6b88a1d9edad" name="xdebug_str.h" role="src" />
-   <file md5sum="8d68f3792fea9d28317084cd3be165fe" name="xdebug_superglobals.c" role="src" />
+   <file md5sum="28b9cee0dee4cb2702949a8d583da111" name="xdebug_superglobals.c" role="src" />
    <file md5sum="aac085d7cc5153580b0ddca572b97c43" name="xdebug_superglobals.h" role="src" />
    <file md5sum="676cdb94e7dbe8745aaff6134e0ef98d" name="xdebug_tracing.c" role="src" />
    <file md5sum="926db348730ca000784fd85bfcef1bb1" name="xdebug_tracing.h" role="src" />
-   <file md5sum="f2bdfe8394a4bf1a6cf359938854002f" name="xdebug_trace_textual.c" role="src" />
+   <file md5sum="e6ec6a694cbb34b88bd9cb51a57442f9" name="xdebug_trace_textual.c" role="src" />
    <file md5sum="d3f513da766829264343630644269441" name="xdebug_trace_textual.h" role="src" />
-   <file md5sum="f1c71d96d48563a68e137fbc4fe413b3" name="xdebug_trace_computerized.c" role="src" />
+   <file md5sum="53b5ae7d675f1eaf767f76158845003a" name="xdebug_trace_computerized.c" role="src" />
    <file md5sum="7b45bdec85093d9f16b1885c9cc0e780" name="xdebug_trace_computerized.h" role="src" />
    <file md5sum="9d34d4325f84a0cdd87677548c21ff19" name="xdebug_trace_html.c" role="src" />
    <file md5sum="46bbbf32ba6522a91fbfd461eba349e2" name="xdebug_trace_html.h" role="src" />
-   <file md5sum="62067fa4096356eb1b8d31fe11092d36" name="xdebug_var.c" role="src" />
+   <file md5sum="e1cecf75214dadb3c0e92131d440aab5" name="xdebug_var.c" role="src" />
    <file md5sum="e01755f90da0e45d02a62bb0e1961aec" name="xdebug_var.h" role="src" />
-   <file md5sum="136ff917e7bc5ef739cc93aed4f4e426" name="xdebug_xml.c" role="src" />
+   <file md5sum="d10a6622c9991ce19f74f5e351b3b084" name="xdebug_xml.c" role="src" />
    <file md5sum="54a5229e204cea7542a4e6e4e1dec2ab" name="xdebug_xml.h" role="src" />
   </dir>
  </contents>
@@ -156,6 +159,41 @@ Sun, Dec  4, 2016 - xdebug 2.5.0
  <providesextension>xdebug</providesextension>
  <zendextsrcrelease />
  <changelog>
+  <release>
+   <date>2016-12-04</date>
+   <time>18:55:08</time>
+   <version>
+    <release>2.5.0</release>
+    <api>2.5.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD style</license>
+   <notes>
+Sun, Dec  4, 2016 - xdebug 2.5.0
+
++ Added features:
+
+  - Implemented issue #1232: add memory delta to HTML traces
+  - Implemented issue #1365: Allow remote_connect_back to be set through
+    XDEBUG_CONFIG
+
+= Fixed bugs:
+
+  - Fixed issue #1168: Added defensive check to prevent infinite loop
+  - Fixed issue #1242: Xdebug on Windows with Eclipse has issues with
+    breakpoint IDs
+  - Fixed issue #1343: Wrong values of numerical keys outside 32bit range
+  - Fixed issue #1357: Function signature using variadics is reported as being
+    not executed
+  - Fixed issue #1361: Remote debugging connection issues with Windows (Anatol
+    Belski)
+  - Fixed issue #1373: Crash in zend_hash_apply_with_arguments when debugging,
+    due to unset symbol table
+   </notes>
+  </release>
   <release>
    <date>2016-11-12</date>
    <time>14:28:08</time>
