@@ -285,9 +285,9 @@ void xdebug_append_error_description(xdebug_str *str, int html, const char *erro
 		 * rest of the original buffer. */
 		if (first_closing && strstr(buffer, "() [<a href=") != NULL) {
 #if PHP_VERSION_ID >= 70000
-			smart_string special_escaped = {0};
+			smart_string special_escaped = { 0, 0, 0 };
 #else
-			smart_str special_escaped = {0};
+			smart_str special_escaped = { 0, 0, 0 };
 #endif
 
 			*first_closing = '\0';
@@ -864,7 +864,7 @@ void xdebug_error_cb(int type, const char *error_filename, const uint error_line
 				    !SG(headers_sent) &&
 					SG(sapi_headers).http_response_code == 200
 				) {
-					sapi_header_line ctr = {0};
+					sapi_header_line ctr = { 0, 0, 0 };
 
 					ctr.line = "HTTP/1.0 500 Internal Server Error";
 					ctr.line_len = sizeof("HTTP/1.0 500 Internal Server Error") - 1;
@@ -1087,17 +1087,13 @@ static void xdebug_build_fname(xdebug_func *tmp, zend_execute_data *edata TSRMLS
 		if (edata->This.value.obj) {
 #endif
 			tmp->type = XFUNC_MEMBER;
-			if (edata->func->common.scope) {
-				if (strcmp(edata->func->common.scope->name->val, "class@anonymous") == 0) {
-					tmp->class = xdebug_sprintf(
-						"{anonymous-class:%s:%d-%d}",
-						edata->func->common.scope->info.user.filename->val,
-						edata->func->common.scope->info.user.line_start,
-						edata->func->common.scope->info.user.line_end
-					);
-				} else {
-					tmp->class = xdstrdup(edata->func->common.scope->name->val);
-				}
+			if (edata->func->common.scope && strcmp(edata->func->common.scope->name->val, "class@anonymous") == 0) {
+				tmp->class = xdebug_sprintf(
+					"{anonymous-class:%s:%d-%d}",
+					edata->func->common.scope->info.user.filename->val,
+					edata->func->common.scope->info.user.line_start,
+					edata->func->common.scope->info.user.line_end
+				);
 			} else {
 				tmp->class = xdstrdup(edata->This.value.obj->ce->name->val);
 			}

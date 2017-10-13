@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<package packagerversion="1.10.1" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
+<package packagerversion="1.10.4" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
  <name>xdebug</name>
  <channel>pecl.php.net</channel>
  <summary>Provides functions for function traces and profiling</summary>
@@ -25,11 +25,11 @@ Xdebug also provides:
   <email>derick@xdebug.org</email>
   <active>yes</active>
  </lead>
- <date>2017-02-26</date>
- <time>14:27:44</time>
+ <date>2017-06-20</date>
+ <time>10:44:03</time>
  <version>
-  <release>2.5.1</release>
-  <api>2.5.1</api>
+  <release>2.5.5</release>
+  <api>2.5.5</api>
  </version>
  <stability>
   <release>stable</release>
@@ -37,28 +37,15 @@ Xdebug also provides:
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD style</license>
  <notes>
-Sun, Feb 26, 2017 - xdebug 2.5.1
+Wed, Jun 21, 2017 - xdebug 2.5.5
 
 = Fixed bugs:
 
-  - Fixed issue #1057: Add xdebug.ini of all settings to package
-  - Fixed issue #1165: DBGp: step_out skips subsequent function calls
-  - Fixed issue #1180: Code coverage crashes with non-standard start/stops
-  - Fixed issue #1278: Xdebug with PHP 7 does not handle prefill-from-oparray
-    for XDEBUG_CC_UNUSED
-  - Fixed issue #1300: Xdebug functions are not exposing their signature to
-    Reflection
-  - Fixed issue #1313: Arguments to __call() trampoline picked from the wrong
-    memory location
-  - Fixed issue #1329: While printing out a stack with and function parameters,
-    XDebug reads uninitialized zvals or free()d memory
-  - Fixed issue #1381: Code Coverage misses line due to missing FETCH_DIM_W
-    overload
-  - Fixed issue #1385: can not fetch IS_INDIRECT properties
-  - Fixed issue #1386: Executable code not shown as executed/executable
-  - Fixed issue #1392: Unable to compile on FreeBSD due to missing struct
-    definition
-  - Fixed issue #1394: Code coverage does not cover instanceof (in elseif)
+  - Fixed issue #1439: TYPE_CHECK needs overloading due to smart branches
+  - Fixed issue #1444: Code Coverage misses a variable in a multi-line function
+    call
+  - Fixed issue #1446: Code Coverage misses elseif if it uses an isset with a
+    property
  </notes>
  <contents>
   <dir name="/">
@@ -96,22 +83,22 @@ Sun, Feb 26, 2017 - xdebug 2.5.1
    <file md5sum="c1355136765e8f65a2e69e7b8cafbba1" name="xdebug.ini" role="doc" />
    <file md5sum="a88bc3039991574186377fc15dd85ea3" name="Makefile.frag" role="src" />
    <file md5sum="491aea9e7732f8a60a426964acb8c3ed" name="Makefile.in" role="src" />
-   <file md5sum="1a7de4f506e9fe155e1c6d83b268e1db" name="php_xdebug.h" role="src" />
+   <file md5sum="679eb011e34f4040b4bca489eae82b05" name="php_xdebug.h" role="src" />
    <file md5sum="6641593a27b51bf613038d37c63c86ce" name="README.rst" role="doc" />
-   <file md5sum="ca7920b988c0263a46463028586f0e28" name="usefulstuff.c" role="src" />
+   <file md5sum="4f712e3110a5e6fed6792a82e6e89800" name="usefulstuff.c" role="src" />
    <file md5sum="6144a01ef95a1e12b7aaf705529c5beb" name="usefulstuff.h" role="src" />
-   <file md5sum="8eda70b1f096b1d0dcc583451dd11bac" name="xdebug.c" role="src" />
-   <file md5sum="cccd01899aff98d2c00ede4fe3a0c108" name="xdebug_branch_info.c" role="src" />
+   <file md5sum="ccd89c79aa001cb8b70ad5abee1c9192" name="xdebug.c" role="src" />
+   <file md5sum="ae09120bcbfcd0b17dde57bcf96acab1" name="xdebug_branch_info.c" role="src" />
    <file md5sum="32c53e9e7b8f5326e64c86f5984cd8e4" name="xdebug_branch_info.h" role="src" />
-   <file md5sum="5a42294c46a9d2f084d2290c7f913ffc" name="xdebug_code_coverage.c" role="src" />
-   <file md5sum="e280fbdde920e4709e944b2139efa497" name="xdebug_code_coverage.h" role="src" />
-   <file md5sum="d9b27d903916dafdef920ab41cdf2be7" name="xdebug_com.c" role="src" />
+   <file md5sum="8f1e1befc864d139462f558e73ed294e" name="xdebug_code_coverage.c" role="src" />
+   <file md5sum="2eeb8ef99b0f2adc252d0c88c701c0aa" name="xdebug_code_coverage.h" role="src" />
+   <file md5sum="20b313858ac3344bd7555605da7d22e8" name="xdebug_com.c" role="src" />
    <file md5sum="a3ffe5c458a1ec3e8b39ed8f6d4c30ab" name="xdebug_com.h" role="src" />
    <file md5sum="22f067f273541035c8f7e5045fff73c8" name="xdebug_compat.c" role="src" />
-   <file md5sum="32e8a5b9815c58d7b49c3631333f08fa" name="xdebug_compat.h" role="src" />
-   <file md5sum="755515aeaaac4fb7739563897f25eab1" name="xdebug_handlers.c" role="src" />
+   <file md5sum="7d8e5b935c52578b1ad230e0eb382779" name="xdebug_compat.h" role="src" />
+   <file md5sum="9f9fa15e9a07d0d861aaab79d20af203" name="xdebug_handlers.c" role="src" />
    <file md5sum="7d23181220506162d9e126141e617da3" name="xdebug_handlers.h" role="src" />
-   <file md5sum="f757cbd8fc1875fec64014a0ebb11fcb" name="xdebug_handler_dbgp.c" role="src" />
+   <file md5sum="f019130ed571120f0c732ddf4316c6c4" name="xdebug_handler_dbgp.c" role="src" />
    <file md5sum="15c804c86929222f23c26ef57960fdc8" name="xdebug_handler_dbgp.h" role="src" />
    <file md5sum="b6891a226169e6cc7afba5abb5050fff" name="xdebug_hash.c" role="src" />
    <file md5sum="a441388af62f931722d2e2d66042046e" name="xdebug_hash.h" role="src" />
@@ -122,25 +109,25 @@ Sun, Feb 26, 2017 - xdebug 2.5.1
    <file md5sum="48dea7d5c347ea1f16ab1af728b61e54" name="xdebug_monitor.h" role="src" />
    <file md5sum="71b2c40e3be58d79f7bca6766ed043e0" name="xdebug_private.c" role="src" />
    <file md5sum="c03ed72a28ac8d843f2083c97157fb09" name="xdebug_private.h" role="src" />
-   <file md5sum="49ead1b9943882239b4a774dc8470dd4" name="xdebug_profiler.c" role="src" />
+   <file md5sum="3fb4441686bd7034ed135316a184a45d" name="xdebug_profiler.c" role="src" />
    <file md5sum="df7bfee261ea9317b35f9d3b3e259beb" name="xdebug_profiler.h" role="src" />
    <file md5sum="3ef0151c6a8465dda8d96bc377f9beb8" name="xdebug_set.c" role="src" />
    <file md5sum="bb6c996a8e3529e1abc21e69ae4e8121" name="xdebug_set.h" role="src" />
-   <file md5sum="b188c2189812f9b4cef8685e6017dd6f" name="xdebug_stack.c" role="src" />
+   <file md5sum="2e25fddd1248520fb57c3ce38e7c1077" name="xdebug_stack.c" role="src" />
    <file md5sum="08e2e02f37faebb35ec88f4cb0e87153" name="xdebug_stack.h" role="src" />
    <file md5sum="08edcec14b70c297f7c70bae9f1da235" name="xdebug_str.c" role="src" />
    <file md5sum="2b731180bf163537b25b6b88a1d9edad" name="xdebug_str.h" role="src" />
-   <file md5sum="28b9cee0dee4cb2702949a8d583da111" name="xdebug_superglobals.c" role="src" />
+   <file md5sum="a2a6a0db3c94655fb96f2c120bab6822" name="xdebug_superglobals.c" role="src" />
    <file md5sum="aac085d7cc5153580b0ddca572b97c43" name="xdebug_superglobals.h" role="src" />
    <file md5sum="676cdb94e7dbe8745aaff6134e0ef98d" name="xdebug_tracing.c" role="src" />
    <file md5sum="926db348730ca000784fd85bfcef1bb1" name="xdebug_tracing.h" role="src" />
-   <file md5sum="e6ec6a694cbb34b88bd9cb51a57442f9" name="xdebug_trace_textual.c" role="src" />
+   <file md5sum="7f5d8882684e1f153c6c2ecd66adbc1e" name="xdebug_trace_textual.c" role="src" />
    <file md5sum="d3f513da766829264343630644269441" name="xdebug_trace_textual.h" role="src" />
    <file md5sum="53b5ae7d675f1eaf767f76158845003a" name="xdebug_trace_computerized.c" role="src" />
    <file md5sum="7b45bdec85093d9f16b1885c9cc0e780" name="xdebug_trace_computerized.h" role="src" />
    <file md5sum="9d34d4325f84a0cdd87677548c21ff19" name="xdebug_trace_html.c" role="src" />
    <file md5sum="46bbbf32ba6522a91fbfd461eba349e2" name="xdebug_trace_html.h" role="src" />
-   <file md5sum="e1cecf75214dadb3c0e92131d440aab5" name="xdebug_var.c" role="src" />
+   <file md5sum="0c7f30dec62a9ba4a9e929966a9448a1" name="xdebug_var.c" role="src" />
    <file md5sum="e01755f90da0e45d02a62bb0e1961aec" name="xdebug_var.h" role="src" />
    <file md5sum="d10a6622c9991ce19f74f5e351b3b084" name="xdebug_xml.c" role="src" />
    <file md5sum="54a5229e204cea7542a4e6e4e1dec2ab" name="xdebug_xml.h" role="src" />
@@ -159,6 +146,120 @@ Sun, Feb 26, 2017 - xdebug 2.5.1
  <providesextension>xdebug</providesextension>
  <zendextsrcrelease />
  <changelog>
+  <release>
+   <date>2017-05-15</date>
+   <time>12:08:11</time>
+   <version>
+    <release>2.5.4</release>
+    <api>2.5.4</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD style</license>
+   <notes>
+Mon, May 15, 2017 - xdebug 2.5.4
+
+= Fixed bugs:
+
+  - Fixed issue #799: Function traces report base class instead of object name
+  - Fixed issue #1421: Fix set_time_limit hanging on PHP 5.6 when pcntl_exec
+    does not exist (Frode E. Moe)
+  - Fixed issue #1429: Code coverage does not cover null coalesce
+  - Fixed issue #1434: Code coverage segfaults on 32-bit arch
+   </notes>
+  </release>
+  <release>
+   <date>2017-04-18</date>
+   <time>19:31:21</time>
+   <version>
+    <release>2.5.3</release>
+    <api>2.5.3</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD style</license>
+   <notes>
+Mon, Apr 18, 2017 - xdebug 2.5.3
+
+= Fixed bugs:
+
+  - Fixed issue #1421: Xdebug crashes when it is loaded without pcntl being
+    present
+   </notes>
+  </release>
+  <release>
+   <date>2017-04-17</date>
+   <time>18:42:26</time>
+   <version>
+    <release>2.5.2</release>
+    <api>2.5.2</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD style</license>
+   <notes>
+Mon, Apr 17, 2017 - xdebug 2.5.2
+
+= Fixed bugs:
+
+  - Fixed issue #701: Functions as array indexes show ??? in trace
+  - Fixed issue #1403: Code coverage does not cover BIND_STATIC
+  - Fixed issue #1404: Execution time is calculated incorrectly
+  - Fixed issue #1413: Code coverage mishap with PHP 7.1.3
+  - Fixed issue #1414: Missing variable assignment in traces with OPcache
+    loaded
+  - Fixed issue #1415: Crash with multiple catch constructs with OPcache loaded
+  - Fixed issue #1416: Trace files should not include the first result of a
+    generator if it hasn&apos;t started yet
+  - Fixed issue #1417: Fetching properties of static class contexts fails due
+    to incorrect fetch mode
+  - Fixed issue #1419: Summary not written when script ended with
+    &quot;pcntl_exec()&quot;
+   </notes>
+  </release>
+  <release>
+   <date>2017-04-17</date>
+   <time>18:42:26</time>
+   <version>
+    <release>2.5.2</release>
+    <api>2.5.2</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD style</license>
+   <notes>
+Sun, Feb 26, 2017 - xdebug 2.5.1
+
+= Fixed bugs:
+
+  - Fixed issue #1057: Add xdebug.ini of all settings to package
+  - Fixed issue #1165: DBGp: step_out skips subsequent function calls
+  - Fixed issue #1180: Code coverage crashes with non-standard start/stops
+  - Fixed issue #1278: Xdebug with PHP 7 does not handle prefill-from-oparray
+    for XDEBUG_CC_UNUSED
+  - Fixed issue #1300: Xdebug functions are not exposing their signature to
+    Reflection
+  - Fixed issue #1313: Arguments to __call() trampoline picked from the wrong
+    memory location
+  - Fixed issue #1329: While printing out a stack with and function parameters,
+    XDebug reads uninitialized zvals or free()d memory
+  - Fixed issue #1381: Code Coverage misses line due to missing FETCH_DIM_W
+    overload
+  - Fixed issue #1385: can not fetch IS_INDIRECT properties
+  - Fixed issue #1386: Executable code not shown as executed/executable
+  - Fixed issue #1392: Unable to compile on FreeBSD due to missing struct
+    definition
+  - Fixed issue #1394: Code coverage does not cover instanceof (in elseif)
+   </notes>
+  </release>
   <release>
    <date>2016-12-04</date>
    <time>18:55:08</time>
